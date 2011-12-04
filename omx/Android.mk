@@ -5,7 +5,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 TI_BRIDGE_TOP := $(ANDROID_BUILD_TOP)/hardware/ti/omap3-compat/dspbridge
-TI_BRIDGE_INCLUDES := $(TI_BRIDGE_TOP)/libbridge/inc
+TI_BRIDGE_INCLUDES := $(TI_BRIDGE_TOP)/api/inc
 
 OMX_DEBUG ?= 1
 RESOURCE_MANAGER_ENABLED ?= 0
