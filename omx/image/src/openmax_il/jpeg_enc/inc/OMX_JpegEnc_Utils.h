@@ -91,7 +91,6 @@
 
 #define PADDING_128_BYTE	128
 #define PADDING_256_BYTE	256
-#define JPEGENC_THUMBNAIL_ABSENT_WARNING 4
 
 #ifdef UNDER_CE
     #include <oaf_debug.h>
@@ -247,8 +246,8 @@ typedef struct IDMJPGE_TIGEM_DynamicParams {
     IDMJPGE_TIGEM_CustomQuantTables *quantTable;
 } IDMJPGE_TIGEM_DynamicParams;
 
-/* PPLIB not needed if the the input to jpeg encoder is yuv. Uncomment the next line if PPLIB is needed */
-/* #define __JPEG_OMX_PPLIB_ENABLED__ */
+
+#define __JPEG_OMX_PPLIB_ENABLED__
 
 #ifdef __JPEG_OMX_PPLIB_ENABLED__
 #define OMX_JPEGENC_NUM_DLLS (5)

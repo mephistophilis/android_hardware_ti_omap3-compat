@@ -226,17 +226,17 @@ OMX_ERRORTYPE JpegEncDisablePort (JPEGENC_COMPONENT_PRIVATE* pComponentPrivate, 
     OMX_PRINT1(pComponentPrivate->dbg, "Inside DisablePort function\n");
 
     OMX_PRBUFFER1(pComponentPrivate->dbg, "Inside disable port (%lu) %lu %lu %lu %lu\n", 
-            nParam1,
-            pComponentPrivate->nInPortIn,
-            pComponentPrivate->nInPortOut,
-            pComponentPrivate->nOutPortIn,
-            pComponentPrivate->nOutPortOut);
+    nParam1,
+    pComponentPrivate->nInPortIn,
+    pComponentPrivate->nInPortOut,
+    pComponentPrivate->nOutPortIn,
+    pComponentPrivate->nOutPortOut);
 
-   if (pComponentPrivate->nCurState == OMX_StateExecuting || pComponentPrivate->nCurState == OMX_StatePause) {
-	if ((nParam1 == JPEGENC_INP_PORT) || (nParam1 == JPEGENC_OUT_PORT) || ((int)nParam1 == -1)) {
-           eError = HandleJpegEncInternalFlush(pComponentPrivate, nParam1);
-       }
-   }
+    if (pComponentPrivate->nCurState == OMX_StateExecuting || pComponentPrivate->nCurState == OMX_StatePause) {
+        if ((nParam1 == JPEGENC_INP_PORT) || (nParam1 == JPEGENC_OUT_PORT) || ((int)nParam1 == -1)) {
+            eError = HandleJpegEncInternalFlush(pComponentPrivate, nParam1);
+        }
+    }
 
     OMX_PRINT1(pComponentPrivate->dbg, "Exit form JPEGEnc Disable Port eError is = %x\n",eError);
 EXIT:
@@ -266,13 +266,16 @@ OMX_ERRORTYPE JpegEncEnablePort (JPEGENC_COMPONENT_PRIVATE* pComponentPrivate, O
     OMX_PRINT1(pComponentPrivate->dbg, "Inside EnablePort function\n");
 
 
-    if (nParam1 == 0) {
-        if (pComponentPrivate->nCurState != OMX_StateLoaded) {
-        pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
-        while (!pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->bPopulated) {
-            OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
-            pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
-        }
+    if (nParam1 == 0) 
+    {
+        if (pComponentPrivate->nCurState != OMX_StateLoaded) 
+        {
+            pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
+            while (!pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->bPopulated) 
+            {
+                OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
+                pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
+            }
         }
         pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
         pComponentPrivate->cbInfo.EventHandler (pComponentPrivate->pHandle,
@@ -281,13 +284,17 @@ OMX_ERRORTYPE JpegEncEnablePort (JPEGENC_COMPONENT_PRIVATE* pComponentPrivate, O
                                                 OMX_CommandPortEnable,
                                                 JPEGENC_INP_PORT,
                                                 NULL);
-    } else if (nParam1 == 1) {
-        if (pComponentPrivate->nCurState != OMX_StateLoaded) {
-        pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
-        while (!pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->bPopulated) {
-            OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
-            pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
-        }
+    } 
+    else if (nParam1 == 1) 
+    {
+        if (pComponentPrivate->nCurState != OMX_StateLoaded) 
+        {
+            pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
+            while (!pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->bPopulated) 
+            {
+                OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
+                pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
+            }
         }
         pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
         pComponentPrivate->cbInfo.EventHandler (pComponentPrivate->pHandle,
@@ -296,15 +303,19 @@ OMX_ERRORTYPE JpegEncEnablePort (JPEGENC_COMPONENT_PRIVATE* pComponentPrivate, O
                                                 OMX_CommandPortEnable,
                                                 JPEGENC_OUT_PORT,
                                                 NULL);
-    } else if ((int)nParam1 == -1) {
-        if (pComponentPrivate->nCurState != OMX_StateLoaded) {
-        pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
-        while ((!pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->bPopulated) ||
-               (!pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->bPopulated)) {
-            OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
-            pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
-        }
-        pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
+    } 
+    else if ((int)nParam1 == -1) 
+    {
+        if (pComponentPrivate->nCurState != OMX_StateLoaded) 
+        {
+            pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
+            while ((!pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->bPopulated) ||
+                   (!pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->bPopulated)) 
+            {
+                OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
+                pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
+            }
+            pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
         }
         pComponentPrivate->cbInfo.EventHandler (pComponentPrivate->pHandle,
                                                 pComponentPrivate->pHandle->pApplicationPrivate,
@@ -353,28 +364,32 @@ OMX_ERRORTYPE JPEGEnc_Start_ComponentThread(OMX_HANDLETYPE pComponent)
 
     /* create the pipe used to maintain free output buffers*/
     eError = pipe (pComponentPrivate->free_outBuf_Q);
-    if ( eError ) {
+    if ( eError ) 
+    {
         eError = OMX_ErrorInsufficientResources;
         goto EXIT;
     }
 
     /* create the pipe used to maintain filled input buffers*/
     eError = pipe (pComponentPrivate->filled_inpBuf_Q);
-    if ( eError ) {
+    if ( eError ) 
+    {
         eError = OMX_ErrorInsufficientResources;
         goto EXIT;
     }
 
     /* create the pipe used to send commands to the thread */
     eError = pipe (pComponentPrivate->nCmdPipe);
-    if ( eError ) {
+    if ( eError ) 
+    {
         eError = OMX_ErrorInsufficientResources;
         goto EXIT;
     }
 
     /* create the pipe used to send commands to the thread */
     eError = pipe (pComponentPrivate->nCmdDataPipe);
-    if ( eError ) {
+    if ( eError ) 
+    {
         eError = OMX_ErrorInsufficientResources;
         goto EXIT;
     }
@@ -387,7 +402,8 @@ OMX_ERRORTYPE JPEGEnc_Start_ComponentThread(OMX_HANDLETYPE pComponent)
                              OMX_JpegEnc_Thread, pComponent);
 
 
-    if ( eError || !pComponentPrivate->ComponentThread ) {
+    if ( eError || !pComponentPrivate->ComponentThread ) 
+    {
         eError = OMX_ErrorInsufficientResources;
         goto EXIT;
     }
@@ -438,33 +454,38 @@ OMX_ERRORTYPE JPEGEnc_Free_ComponentResources(JPEGENC_COMPONENT_PRIVATE *pCompon
                       PERF_BoundaryStart | PERF_BoundaryCleanup);
 #endif
 
-    if ( pComponentPrivate->pLCML != NULL && pComponentPrivate->isLCMLActive) {
-    	LCML_ControlCodec(((LCML_DSP_INTERFACE*)pComponentPrivate->pLCML)->pCodecinterfacehandle,EMMCodecControlDestroy,NULL);
-    	dlclose(pComponentPrivate->pDllHandle);
-    	pComponentPrivate->pLCML = NULL;
-    	pComponentPrivate->isLCMLActive = 0;
+    if ( pComponentPrivate->pLCML != NULL && pComponentPrivate->isLCMLActive) 
+    {
+      	LCML_ControlCodec(((LCML_DSP_INTERFACE*)pComponentPrivate->pLCML)->pCodecinterfacehandle,EMMCodecControlDestroy,NULL);
+        dlclose(pComponentPrivate->pDllHandle);
+      	pComponentPrivate->pLCML = NULL;
+      	pComponentPrivate->isLCMLActive = 0;
     }
 
     pipeError = write(pComponentPrivate->nCmdPipe[1], &eCmd, sizeof(eCmd));
-    if (pipeError == -1) {
+    if (pipeError == -1) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while writing to nCmdPipe\n");
     }
     
     pipeError = write(pComponentPrivate->nCmdDataPipe[1], &nParam, sizeof(nParam));
-    if (pipeError == -1) {
+    if (pipeError == -1) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while writing to nCmdPipe\n");
     }
 
     pthreadError = pthread_join (pComponentPrivate->ComponentThread,
                                  (void*)&threadError);
-    if ( 0 != pthreadError ) {
+    if ( 0 != pthreadError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_TRACE4(dbg, "Error while closing Component Thread\n");
     }
 
-    if ( OMX_ErrorNone != threadError && OMX_ErrorNone != eError ) {
+    if ( OMX_ErrorNone != threadError && OMX_ErrorNone != eError ) 
+    {
         eError = OMX_ErrorInsufficientResources;
         OMX_TRACE4(dbg, "Error while closing Component Thread\n");
     }
@@ -472,51 +493,59 @@ OMX_ERRORTYPE JPEGEnc_Free_ComponentResources(JPEGENC_COMPONENT_PRIVATE *pCompon
     /*  close the data pipe handles */
 
     err = close (pComponentPrivate->free_outBuf_Q[0]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing data pipe\n");
     }
 
     err = close (pComponentPrivate->filled_inpBuf_Q[0]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing data pipe\n");
     }
 
     err = close (pComponentPrivate->free_outBuf_Q[1]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing data pipe\n");
     }
 
     err = close (pComponentPrivate->filled_inpBuf_Q[1]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing data pipe\n");
     }
 
     /*  close the command pipe handles  */
     err = close (pComponentPrivate->nCmdPipe[0]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing cmd pipe\n");
     }
 
     err = close (pComponentPrivate->nCmdPipe[1]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing cmd pipe\n");
     }
 
     /*  close the command data pipe handles */
     err = close (pComponentPrivate->nCmdDataPipe[0]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing cmd pipe\n");
     }
 
     err = close (pComponentPrivate->nCmdDataPipe[1]);
-    if ( 0 != err && OMX_ErrorNone == eError ) {
+    if ( 0 != err && OMX_ErrorNone == eError ) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRCOMM4(dbg, "Error while closing cmd pipe\n");
     }
@@ -531,7 +560,7 @@ OMX_ERRORTYPE JPEGEnc_Free_ComponentResources(JPEGENC_COMPONENT_PRIVATE *pCompon
     pthread_cond_destroy(&pComponentPrivate->unpopulate_cond);
 #ifdef __PERF_INSTRUMENTATION__
     PERF_Boundary(pComponentPrivate->pPERF,
-    		PERF_BoundaryComplete | PERF_BoundaryCleanup);
+    PERF_BoundaryComplete | PERF_BoundaryCleanup);
     PERF_Done(pComponentPrivate->pPERF);
 #endif
 
@@ -600,40 +629,50 @@ OMX_ERRORTYPE Fill_JpegEncLCMLInitParams(LCML_DSP *lcml_dsp, OMX_U16 arr[], OMX_
     lcml_dsp->Priority = 5;
 
 #ifdef __JPEG_OMX_PPLIB_ENABLED__
-      if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (352*288)) {
+      if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (352*288)) 
+      {
           lcml_dsp->ProfileID = 2 ;
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (640*480)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (640*480)) 
+      {
           lcml_dsp->ProfileID = 2 +1 ; // temporary fix meanwhile SN confirms is there's any problem with VGA profile ID
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (720*576)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (720*576)) 
+      {
           lcml_dsp->ProfileID = 3 ;
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (1*1024*1024)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (1*1024*1024))
+      {
           lcml_dsp->ProfileID = 4 ;
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (2*1024*1024)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (2*1024*1024))
+      {
           lcml_dsp->ProfileID = 5 ;
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (3*1024*1024)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (3*1024*1024))
+      {
           lcml_dsp->ProfileID = 6 ;
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (4*1024*1024)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (4*1024*1024))
+      {
           lcml_dsp->ProfileID = 7 ;
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (5*1024*1024)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (5*1024*1024))
+      {
           lcml_dsp->ProfileID = 8 ;
       }
-      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (6*1024*1024)) {
+      else if ((pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth) <= (6*1024*1024))
+      {
           lcml_dsp->ProfileID = 9 ;
       }
-      else {
+      else 
+      {
           lcml_dsp->ProfileID = 10;
       }
 #else
     /* according to JPEG Enc SN Interface guide */
     /* if PPLib is not enabled than  use profile 1 by default */
-    lcml_dsp->ProfileID = 2;
+    lcml_dsp->ProfileID = 1;
 #endif
 
     /* CrPhArgs for JpegEnc */
@@ -658,48 +697,52 @@ OMX_ERRORTYPE Fill_JpegEncLCMLInitParams(LCML_DSP *lcml_dsp, OMX_U16 arr[], OMX_
     */
     ptCreateString[9] = 1;
 
-    ptCreateString[10] = 512; /* Maximum Horizontal Size of the Thumbnail for App0 marker */
-    ptCreateString[11] = 384; /* Maximum Vertical Size of the Thumbnail for App0 marker */
-    ptCreateString[12] = 512; /* Maximum Horizontal Size of the Thumbnail for App1 marker */
-    ptCreateString[13] = 384; /* Maximum Vertical Size of the Thumbnail for App1 marker */
-    ptCreateString[14] = 512; /* Maximum Horizontal Size of the Thumbnail for App13 marker */
-    ptCreateString[15] = 384; /* Maximum Vertical Size of the Thumbnail for App13 marker */
+    ptCreateString[10] = 320; /* Maximum Horizontal Size of the Thumbnail for App0 marker */
+    ptCreateString[11] = 240; /* Maximum Vertical Size of the Thumbnail for App0 marker */
+    ptCreateString[12] = 320; /* Maximum Horizontal Size of the Thumbnail for App1 marker */
+    ptCreateString[13] = 240; /* Maximum Vertical Size of the Thumbnail for App1 marker */
+    ptCreateString[14] = 320; /* Maximum Horizontal Size of the Thumbnail for App13 marker */
+    ptCreateString[15] = 240; /* Maximum Vertical Size of the Thumbnail for App13 marker */
     ptCreateString[16] = 0; /* Number of scans is always 0 */
 
 /*
 this option supportsonly up to 3 mega pixels
-	if (pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYUV420PackedPlanar)
+    if (pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYUV420PackedPlanar)
     {
-    	ptCreateString[16] = 1;
+        ptCreateString[16] = 1;
     }
 */
 
     ptCreateString[17] = 0;
-    if ( pPortDefIn->format.image.eColorFormat == OMX_COLOR_Format32bitARGB8888){
+    if ( pPortDefIn->format.image.eColorFormat == OMX_COLOR_Format32bitARGB8888)
+    {
     	ptCreateString[17] = 1; //Convert flag
     }
-	
-	/*Do an internal conversion from YUV420P to YUV422I and encode so that
-	this JPEG would be viewable using the TI JPEG decoder*/
-	else if (pComponentPrivate->bConvert420pTo422i ){
-		if (pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYUV420PackedPlanar ){
-			ptCreateString[17] = 10;
-			if(pComponentPrivate->bPPLibEnable)
-			{
-				/* memory requirement for having both conversion and pplib is much larger */
-				lcml_dsp->ProfileID +=3;
-			}
-		}
-		else{
-			OMX_PRMGR4(pComponentPrivate->dbg, "Error invalid ColorFormat for YUVConvertion\n");
-			eError=-1;
-			goto EXIT;
-		}
-	}
 
-    ptCreateString[18] = 512; /* Maximum Horizontal Size of the Thumbnail for App5 marker */
-    ptCreateString[19] = 384; /* Maximum Vertical Size of the Thumbnail for App5 marker */
-	
+    /*Do an internal conversion from YUV420P to YUV422I and encode so that
+        this JPEG would be viewable using the TI JPEG decoder*/
+    else if (pComponentPrivate->bConvert420pTo422i )
+    {
+        if (pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYUV420PackedPlanar )
+        {
+            ptCreateString[17] = 10;
+            if(pComponentPrivate->bPPLibEnable)
+            {
+                /* memory requirement for having both conversion and pplib is much larger */
+                lcml_dsp->ProfileID +=3;
+            }
+        }
+        else
+        {
+            OMX_PRMGR4(pComponentPrivate->dbg, "Error invalid ColorFormat for YUVConvertion\n");
+            eError=-1;
+            goto EXIT;
+        }
+    }
+
+    ptCreateString[18] = 320; /* Maximum Horizontal Size of the Thumbnail for App5 marker */
+    ptCreateString[19] = 240; /* Maximum Vertical Size of the Thumbnail for App5 marker */
+
 #ifdef __JPEG_OMX_PPLIB_ENABLED__
 
     //size
@@ -754,7 +797,8 @@ this option supportsonly up to 3 mega pixels
     if(pComponentPrivate->bPPLibEnable)
     {
         ptCreateString[34] = END_OF_CR_PHASE_ARGS;
-    }else
+    }
+    else
     {
         ptCreateString[20] = END_OF_CR_PHASE_ARGS;
     }
@@ -775,9 +819,8 @@ static OMX_ERRORTYPE HandleJpegEncInternalFlush(JPEGENC_COMPONENT_PRIVATE *pComp
 
     OMX_CHECK_PARAM(pComponentPrivate);
 
-    if ( nParam1 == 0x0 ||
-         (int)nParam1 == -1 ) {
-
+    if ( nParam1 == 0x0 || (int)nParam1 == -1 ) 
+    {
         pComponentPrivate->bFlushComplete = OMX_FALSE;
         aParam[0] = USN_STRMCMD_FLUSH;
         aParam[1] = 0;
@@ -797,8 +840,9 @@ static OMX_ERRORTYPE HandleJpegEncInternalFlush(JPEGENC_COMPONENT_PRIVATE *pComp
 
         pComponentPrivate->bFlushComplete = OMX_FALSE;
     }
-    if ( nParam1 == 0x1 ||
-	 (int)nParam1 == -1 ) {
+    
+    if ( nParam1 == 0x1 || (int)nParam1 == -1 ) 
+    {
 
         pComponentPrivate->bFlushComplete = OMX_FALSE;
         aParam[0] = USN_STRMCMD_FLUSH;
@@ -806,12 +850,14 @@ static OMX_ERRORTYPE HandleJpegEncInternalFlush(JPEGENC_COMPONENT_PRIVATE *pComp
         aParam[2] = 0;
         pLcmlHandle = (LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
         eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlStrmCtrl, (void*)aParam);
-        if (eError != OMX_ErrorNone) {
+        if (eError != OMX_ErrorNone) 
+        {
             goto PRINT_EXIT;
         }
 
         pthread_mutex_lock(&pComponentPrivate->jpege_mutex);
-        while (pComponentPrivate->bFlushComplete == OMX_FALSE) {
+        while (pComponentPrivate->bFlushComplete == OMX_FALSE) 
+        {
             OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
             pthread_cond_wait(&pComponentPrivate->flush_cond, &pComponentPrivate->jpege_mutex);
         }
@@ -837,9 +883,8 @@ OMX_ERRORTYPE HandleJpegEncCommandFlush(JPEGENC_COMPONENT_PRIVATE *pComponentPri
 
     OMX_CHECK_PARAM(pComponentPrivate);
 
-    if ( nParam1 == 0x0 ||
-         (int)nParam1 == -1 ) {
-
+    if ( nParam1 == 0x0 || (int)nParam1 == -1 ) 
+    {
         pComponentPrivate->bFlushComplete = OMX_FALSE;
 
         aParam[0] = USN_STRMCMD_FLUSH;
@@ -847,13 +892,15 @@ OMX_ERRORTYPE HandleJpegEncCommandFlush(JPEGENC_COMPONENT_PRIVATE *pComponentPri
         aParam[2] = 0;
         pLcmlHandle = (LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
         eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlStrmCtrl, (void*)aParam);
-        if (eError != OMX_ErrorNone) {
+        if (eError != OMX_ErrorNone) 
+        {
             goto PRINT_EXIT;
         }
-       OMX_PRDSP2(pComponentPrivate->dbg, "sent EMMCodecControlStrmCtrl command\n");
+        OMX_PRDSP2(pComponentPrivate->dbg, "sent EMMCodecControlStrmCtrl command\n");
 
         pthread_mutex_lock(&pComponentPrivate->jpege_mutex);
-        while (pComponentPrivate->bFlushComplete == OMX_FALSE) {
+        while (pComponentPrivate->bFlushComplete == OMX_FALSE) 
+        {
             OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
             pthread_cond_wait(&pComponentPrivate->flush_cond, &pComponentPrivate->jpege_mutex);
         }
@@ -861,37 +908,41 @@ OMX_ERRORTYPE HandleJpegEncCommandFlush(JPEGENC_COMPONENT_PRIVATE *pComponentPri
 
         pComponentPrivate->bFlushComplete = OMX_FALSE;
 
-        while (pComponentPrivate->nInPortIn > pComponentPrivate->nInPortOut) {
+        while (pComponentPrivate->nInPortIn > pComponentPrivate->nInPortOut) 
+        {
 
             OMX_BUFFERHEADERTYPE* pBuffHead = NULL;
             JPEGENC_BUFFER_PRIVATE* pBuffPrivate = NULL;
             int ret;
 
             ret = read(pComponentPrivate->filled_inpBuf_Q[0], &(pBuffHead), sizeof(pBuffHead));
-            if ( ret == -1 ) {
+            if ( ret == -1 ) 
+            {
                 OMX_PRCOMM4(pComponentPrivate->dbg, "Error while reading from the pipe\n");
             }
 
-            if (pBuffHead != NULL) {
+            if (pBuffHead != NULL) 
+            {
                 pBuffPrivate = pBuffHead->pInputPortPrivate;
             }
 
             pComponentPrivate->nInPortOut ++;
             pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
             OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (return empty output buffer) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);
+                          pComponentPrivate->nInPortIn,
+                          pComponentPrivate->nInPortOut,
+                          pComponentPrivate->nOutPortIn,
+                          pComponentPrivate->nOutPortOut);
             OMX_PRBUFFER1(pComponentPrivate->dbg, "before EmptyBufferDone\n");
             pComponentPrivate->cbInfo.EmptyBufferDone(
-                           pComponentPrivate->pHandle,
-                           pComponentPrivate->pHandle->pApplicationPrivate,
-                           pBuffHead);
+                                                      pComponentPrivate->pHandle,
+                                                      pComponentPrivate->pHandle->pApplicationPrivate,
+                                                      pBuffHead);
              OMX_PRBUFFER1(pComponentPrivate->dbg, "after EmptyBufferDone\n");
         }
 #if 0
-        for ( i=0; i < pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->nBufferCountActual; i++ ) {
+        for ( i=0; i < pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->nBufferCountActual; i++ ) 
+        {
 
 #ifdef __PERF_INSTRUMENTATION__
             PERF_SendingFrame(pComponentPrivate->pPERFcomp,
@@ -899,29 +950,28 @@ OMX_ERRORTYPE HandleJpegEncCommandFlush(JPEGENC_COMPONENT_PRIVATE *pComponentPri
                               0,
                               PERF_ModuleHLMM);
 #endif
-          pBuffPrivate = (JPEGENC_BUFFER_PRIVATE*) pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pBufferPrivate[i]->pBufferHdr->pInputPortPrivate;
-          OMX_PRBUFFER2(pComponentPrivate->dbg, "flush input port. buffer owner (%d) %d\n", i, pBuffPrivate->eBufferOwner);
+            pBuffPrivate = (JPEGENC_BUFFER_PRIVATE*) pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pBufferPrivate[i]->pBufferHdr->pInputPortPrivate;
+            OMX_PRBUFFER2(pComponentPrivate->dbg, "flush input port. buffer owner (%d) %d\n", i, pBuffPrivate->eBufferOwner);
         }
 #endif
 
         OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (flush input) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);
+                      pComponentPrivate->nInPortIn,
+                      pComponentPrivate->nInPortOut,
+                      pComponentPrivate->nOutPortIn,
+                      pComponentPrivate->nOutPortOut);
 
         /* returned all input buffers */
         pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                      pComponentPrivate->pHandle->pApplicationPrivate,
-                      OMX_EventCmdComplete,
-                                      OMX_CommandFlush,
-                                      JPEGENC_INP_PORT,
-                                      NULL);
+                                               pComponentPrivate->pHandle->pApplicationPrivate,
+                                               OMX_EventCmdComplete,
+                                               OMX_CommandFlush,
+                                               JPEGENC_INP_PORT,
+                                               NULL);
 
     }
-    if ( nParam1 == 0x1 ||
-         (int)nParam1 == -1 ) {
-
+    if ( nParam1 == 0x1 || (int)nParam1 == -1 ) 
+    {
         pComponentPrivate->bFlushComplete = OMX_FALSE;
 
         aParam[0] = USN_STRMCMD_FLUSH;
@@ -929,13 +979,15 @@ OMX_ERRORTYPE HandleJpegEncCommandFlush(JPEGENC_COMPONENT_PRIVATE *pComponentPri
         aParam[2] = 0;
         pLcmlHandle = (LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
         eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlStrmCtrl, (void*)aParam);
-        if (eError != OMX_ErrorNone) {
+        if (eError != OMX_ErrorNone) 
+        {
             goto PRINT_EXIT;
         }
         OMX_PRDSP2(pComponentPrivate->dbg, "(1) sent EMMCodecControlStrmCtrl command\n");
 
         pthread_mutex_lock(&pComponentPrivate->jpege_mutex);
-        while (pComponentPrivate->bFlushComplete == OMX_FALSE) {
+        while (pComponentPrivate->bFlushComplete == OMX_FALSE) 
+        {
             OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
             pthread_cond_wait(&pComponentPrivate->flush_cond, &pComponentPrivate->jpege_mutex);
         }
@@ -945,7 +997,8 @@ OMX_ERRORTYPE HandleJpegEncCommandFlush(JPEGENC_COMPONENT_PRIVATE *pComponentPri
         /* return all output buffers */
 
 #if 0
-        for ( i=0; i < pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->nBufferCountActual ; i++ ) {
+        for ( i=0; i < pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->nBufferCountActual ; i++ ) 
+        {
             OMX_PRBUFFER1(pComponentPrivate->dbg, "BEFORE  FillBufferDone in OMX_CommandFlush\n");
 
 #ifdef __PERF_INSTRUMENTATION__
@@ -954,57 +1007,61 @@ OMX_ERRORTYPE HandleJpegEncCommandFlush(JPEGENC_COMPONENT_PRIVATE *pComponentPri
                                           PREF(pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr,nFilledLen),
                                           PERF_ModuleHLMM);
 #endif
-          pBuffPrivate = (JPEGENC_BUFFER_PRIVATE*) pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr->pOutputPortPrivate;
-          OMX_PRBUFFER2(pComponentPrivate->dbg, "flush output port. buffer owner (%d) %d\n", i, pBuffPrivate->eBufferOwner);
+            pBuffPrivate = (JPEGENC_BUFFER_PRIVATE*) pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr->pOutputPortPrivate;
+            OMX_PRBUFFER2(pComponentPrivate->dbg, "flush output port. buffer owner (%d) %d\n", i, pBuffPrivate->eBufferOwner);
 
-          OMX_PRBUFFER1(pComponentPrivate->dbg, "in flush 1: buffer %d owner %d\n", i, pBuffPrivate->eBufferOwner);
-          if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_COMPONENT_IN) {
-                  OMX_PRBUFFER1(pComponentPrivate->dbg, "return output buffer %p from free_in_pipe (flush)\n", 
-                     pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr);
-                  pComponentPrivate->nOutPortOut ++;
-                  pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
-                  pComponentPrivate->cbInfo.FillBufferDone (pComponentPrivate->pHandle,
-                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                   pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr);
-          }
+            OMX_PRBUFFER1(pComponentPrivate->dbg, "in flush 1: buffer %d owner %d\n", i, pBuffPrivate->eBufferOwner);
+            if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_COMPONENT_IN) 
+            {
+                OMX_PRBUFFER1(pComponentPrivate->dbg, "return output buffer %p from free_in_pipe (flush)\n", 
+                pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr);
+                pComponentPrivate->nOutPortOut ++;
+                pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
+                pComponentPrivate->cbInfo.FillBufferDone (pComponentPrivate->pHandle,
+                                                          pComponentPrivate->pHandle->pApplicationPrivate,
+                                                          pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr);
+            }
 
         }
 #endif
-        while (pComponentPrivate->nOutPortIn > pComponentPrivate->nOutPortOut) {
+        while (pComponentPrivate->nOutPortIn > pComponentPrivate->nOutPortOut) 
+        {
             OMX_BUFFERHEADERTYPE* pBuffHead = NULL;
             JPEGENC_BUFFER_PRIVATE* pBuffPrivate = NULL;
             int ret;
 
             OMX_PRBUFFER1(pComponentPrivate->dbg, "in while loop %lu %lu )\n", pComponentPrivate->nOutPortIn, pComponentPrivate->nOutPortOut);
             ret = read(pComponentPrivate->free_outBuf_Q[0], &pBuffHead, sizeof(pBuffHead));
-            if ( ret == -1 ) {
+            if ( ret == -1 ) 
+            {
                 OMX_PRCOMM4(pComponentPrivate->dbg, "Error while reading from the pipe\n");
                 goto PRINT_EXIT;
             }
             OMX_PRCOMM1(pComponentPrivate->dbg, "after read\n");
-            if (pBuffHead != NULL) {
+            if (pBuffHead != NULL) 
+            {
                pBuffPrivate = pBuffHead->pOutputPortPrivate;
             }
 
             pComponentPrivate->nOutPortOut ++;
             pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
             OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (return empty output buffer) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);
+                          pComponentPrivate->nInPortIn,
+                          pComponentPrivate->nInPortOut,
+                          pComponentPrivate->nOutPortIn,
+                          pComponentPrivate->nOutPortOut);
              OMX_PRBUFFER1(pComponentPrivate->dbg, "before FillBufferDone\n");
              pComponentPrivate->cbInfo.FillBufferDone(pComponentPrivate->pHandle,
-                    pComponentPrivate->pHandle->pApplicationPrivate,
-                    pBuffHead);
+                                                      pComponentPrivate->pHandle->pApplicationPrivate,
+                                                      pBuffHead);
              OMX_PRBUFFER1(pComponentPrivate->dbg, "after FillBufferDone\n");
         }
 
         OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (flush input) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);
+                      pComponentPrivate->nInPortIn,
+                      pComponentPrivate->nInPortOut,
+                      pComponentPrivate->nOutPortIn,
+                      pComponentPrivate->nOutPortOut);
 
         pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
                                                pComponentPrivate->pHandle->pApplicationPrivate,
@@ -1041,45 +1098,48 @@ OMX_ERRORTYPE SendDynamicParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate)
     //ptParam.nSize   =   sizeof(IIMGENC_DynamicParams);
     ptParam.nSize   =   sizeof(IDMJPGE_TIGEM_DynamicParams) ;
 
-    if ( pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYUV420PackedPlanar ) {
+    if ( pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYUV420PackedPlanar ) 
+    {
         ptParam.nInputChromaFormat = 1;
     }
-    else if ( pPortDefIn->format.image.eColorFormat ==  OMX_COLOR_FormatCbYCrY
-    		|| pPortDefIn->format.image.eColorFormat == OMX_COLOR_Format32bitARGB8888
-            || pPortDefIn->format.image.eColorFormat == OMX_COLOR_Format16bitRGB565) {
+    else if (  pPortDefIn->format.image.eColorFormat ==  OMX_COLOR_FormatCbYCrY
+            || pPortDefIn->format.image.eColorFormat == OMX_COLOR_Format32bitARGB8888
+            || pPortDefIn->format.image.eColorFormat == OMX_COLOR_Format16bitRGB565) 
+    {
         ptParam.nInputChromaFormat = 4;
     }
-	else if ( pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYCbYCr) {
-		ptParam.nInputChromaFormat = 9;
-	}
-    else {
+    else if ( pPortDefIn->format.image.eColorFormat == OMX_COLOR_FormatYCbYCr) 
+    {
+        ptParam.nInputChromaFormat = 9;
+    }
+    else 
+    {
         ptParam.nInputChromaFormat = 1;
     }
 
     if (pComponentPrivate->pCrop->nWidth == 0)
     {
-        ptParam.nInputWidth     = pPortDefIn->format.image.nFrameWidth;
+        ptParam.nInputWidth = pPortDefIn->format.image.nFrameWidth;
     }
     else
     {
-        ptParam.nInputWidth     = pComponentPrivate->pCrop->nWidth;
+        ptParam.nInputWidth = pComponentPrivate->pCrop->nWidth;
     }
 
     if (pComponentPrivate->pCrop->nHeight == 0)
     {
-        ptParam.nInputHeight     = pPortDefIn->format.image.nFrameHeight;
+        ptParam.nInputHeight = pPortDefIn->format.image.nFrameHeight;
     }
     else
     {
-        ptParam.nInputHeight     = pComponentPrivate->pCrop->nHeight;
+        ptParam.nInputHeight = pComponentPrivate->pCrop->nHeight;
     }
 
-    ptParam.nCaptureWidth   =  pPortDefIn->format.image.nFrameWidth;
-    ptParam.nGenerateHeader =   0; /*XDM_ENCODE_AU*/
-    ptParam.qValue          =   pComponentPrivate->pQualityfactor->nQFactor;
+    ptParam.nCaptureWidth   = pPortDefIn->format.image.nFrameWidth;
+    ptParam.nGenerateHeader = 0; /*XDM_ENCODE_AU*/
+    ptParam.qValue          = pComponentPrivate->pQualityfactor->nQFactor;
 
     OMX_PRDSP1(pComponentPrivate->dbg, "ptParam.qValue %lu\n", ptParam.qValue);
-
 
     pTmp = (char*)pComponentPrivate->pDynParams;
     pTmp += 128;
@@ -1098,8 +1158,8 @@ OMX_ERRORTYPE SendDynamicParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate)
     pComponentPrivate->bAckFromSetStatus = 0;
     pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
     eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,
-                                               EMMCodecControlAlgCtrl,
-                                               (void*)&cmdValues);
+                                 EMMCodecControlAlgCtrl,
+                                 (void*)&cmdValues);
 
 EXIT:
     return eError;
@@ -1183,7 +1243,7 @@ OMX_ERRORTYPE SendDynamicPPLibParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
 
     ptInputParam[10] = 0;
 
-     cOffset = (pPortDefIn->format.image.nFrameWidth * pPortDefIn->format.image.nFrameHeight);
+    cOffset = (pPortDefIn->format.image.nFrameWidth * pPortDefIn->format.image.nFrameHeight);
 
     // LgUns FrameInputStartCOffset[0]
 
@@ -1201,15 +1261,19 @@ OMX_ERRORTYPE SendDynamicPPLibParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
 
     ptInputParam[14] = 0;
 
-    if (ulOutPitch > 0) {
-        if (ulPPLIBYUVRotation == 0 || ulPPLIBYUVRotation == 180) {
+    if (ulOutPitch > 0) 
+    {
+        if (ulPPLIBYUVRotation == 0 || ulPPLIBYUVRotation == 180) 
+        {
             cOffset = (pPortDefIn->format.image.nFrameHeight * ulOutPitch);
         }
-        else {
+        else 
+        {
             cOffset = (pPortDefIn->format.image.nFrameWidth * ulOutPitch);
         }
     }
-    else {
+    else 
+    {
         cOffset = (pPortDefIn->format.image.nFrameHeight * pPortDefIn->format.image.nFrameWidth);
     }
 
@@ -1243,7 +1307,8 @@ OMX_ERRORTYPE SendDynamicPPLibParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
     //Contrast (same as Video Gain)
     ptInputParam[24] = ulPPLIBVideoGain;
 
-    if (ulPPLIBEnableCropping == 1) {
+    if (ulPPLIBEnableCropping == 1) 
+    {
         // Cropping
         // LgUns ulInXstart[0]; // Hin active start
         ptInputParam[25] = ulPPLIBXstart;
@@ -1270,7 +1335,8 @@ OMX_ERRORTYPE SendDynamicPPLibParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
         // LgUns ulInYsize; // Vin active height
         ptInputParam[32] = 0;
     }
-    else {
+    else 
+    {
         // Cropping
         // LgUns ulInXstart; // Hin active start
         ptInputParam[25] = 0;
@@ -1298,7 +1364,8 @@ OMX_ERRORTYPE SendDynamicPPLibParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
         ptInputParam[32] = 0;
     }
 
-    if (ulPPLIBEnableZoom) {
+    if (ulPPLIBEnableZoom) 
+    {
         //Zoom
         //LgUns ulZoomFactor; // zooming ratio (/1024)
         ptInputParam[33] = ulPPLIBZoomFactor;
@@ -1319,7 +1386,8 @@ OMX_ERRORTYPE SendDynamicPPLibParam(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
         // LgInt slZoomSpeed; // speed of ratio change
         ptInputParam[38] = 0;
     }
-    else {
+    else 
+    {
         //Zoom
         //LgUns ulZoomFactor; // zooming ratio (/1024)
         ptInputParam[33] = 1024;
@@ -1470,42 +1538,122 @@ OMX_ERRORTYPE HandleJpegEncCommand (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
     pPortDefIn = pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef;
     pPortDefOut = pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef;
 
-    switch ( (OMX_STATETYPE)(nParam1) ) {
-    case OMX_StateIdle:
-        OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateIdle\n");
-        OMX_PRSTATE1(pComponentPrivate->dbg, "CHP 1 pComponentPrivate->nCurState  = %d\n",pComponentPrivate->nCurState );
-        OMX_PRSTATE1(pComponentPrivate->dbg, "In idle in %lu out %lu\n", pComponentPrivate->nInPortIn, pComponentPrivate->nOutPortOut);
+    switch ( (OMX_STATETYPE)(nParam1) ) 
+    {
+        case OMX_StateIdle:
+            OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateIdle\n");
+            OMX_PRSTATE1(pComponentPrivate->dbg, "CHP 1 pComponentPrivate->nCurState  = %d\n",pComponentPrivate->nCurState );
+            OMX_PRSTATE1(pComponentPrivate->dbg, "In idle in %lu out %lu\n", pComponentPrivate->nInPortIn, pComponentPrivate->nOutPortOut);
+            LOGD("HandleCommand: Cmd OMX_StateIdle\n");
+            LOGD("CHP 1 pComponentPrivate->nCurState  = %d\n",pComponentPrivate->nCurState );
+            LOGD("In idle in %lu out %lu\n", pComponentPrivate->nInPortIn, pComponentPrivate->nOutPortOut);
+            if ( pComponentPrivate->nCurState == OMX_StateIdle ) 
+            {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError,
+                                                       OMX_ErrorSameState,
+                                                       OMX_TI_ErrorMinor,
+                                                       NULL);
+                break;
+            }
+            else if ( pComponentPrivate->nCurState == OMX_StateLoaded ||
+                      pComponentPrivate->nCurState == OMX_StateWaitForResources) 
+            {
 
-        if ( pComponentPrivate->nCurState == OMX_StateIdle ) {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError,
-                                                   OMX_ErrorSameState,
-                                                   OMX_TI_ErrorMinor,
-                                                   NULL);
-            break;
-        }
-        else if ( pComponentPrivate->nCurState == OMX_StateLoaded ||
-                  pComponentPrivate->nCurState == OMX_StateWaitForResources) {
-
-                      OMX_PRSTATE2(pComponentPrivate->dbg, "state tranc from loaded to idle\n");
+                OMX_PRSTATE2(pComponentPrivate->dbg, "state tranc from loaded to idle\n");
 #ifdef __PERF_INSTRUMENTATION__
-                  PERF_Boundary(pComponentPrivate->pPERFcomp,
-                                PERF_BoundaryStart | PERF_BoundarySetup);
+                PERF_Boundary(pComponentPrivate->pPERFcomp,
+                              PERF_BoundaryStart | PERF_BoundarySetup);
 #endif
 
 #ifdef RESOURCE_MANAGER_ENABLED /* Resource Manager Proxy Calls */
-            pComponentPrivate->rmproxyCallback.RMPROXY_Callback = (void *)ResourceManagerCallback;
-            lImageResolution = pPortDefIn->format.image.nFrameWidth * pPortDefIn->format.image.nFrameHeight;
-            OMX_GET_RM_VALUE(lImageResolution, nMHzRM, pComponentPrivate->dbg);
-            OMX_PRMGR2(pComponentPrivate->dbg, "Value sent to RM = %d\n", nMHzRM);
-            if (pComponentPrivate->nCurState != OMX_StateWaitForResources) {
+                pComponentPrivate->rmproxyCallback.RMPROXY_Callback = (void *)ResourceManagerCallback;
+                lImageResolution = pPortDefIn->format.image.nFrameWidth * pPortDefIn->format.image.nFrameHeight;
+                OMX_GET_RM_VALUE(lImageResolution, nMHzRM, pComponentPrivate->dbg);
+                OMX_PRMGR2(pComponentPrivate->dbg, "Value sent to RM = %d\n", nMHzRM);
+                if (pComponentPrivate->nCurState != OMX_StateWaitForResources) 
+                {
+                    eError = RMProxy_NewSendCommand(pHandle, RMProxy_RequestResource, OMX_JPEG_Encoder_COMPONENT, nMHzRM, 3456, &(pComponentPrivate->rmproxyCallback));
 
-                eError = RMProxy_NewSendCommand(pHandle, RMProxy_RequestResource, OMX_JPEG_Encoder_COMPONENT, nMHzRM, 3456, &(pComponentPrivate->rmproxyCallback));
+                    if (eError != OMX_ErrorNone) 
+                    {
+                        /* resource is not available, need set state to OMX_StateWaitForResources*/
+                        OMX_PRMGR4(pComponentPrivate->dbg, "Resource is not available\n");
 
-                if (eError != OMX_ErrorNone) {
-                    /* resource is not available, need set state to OMX_StateWaitForResources*/
-                    OMX_PRMGR4(pComponentPrivate->dbg, "Resource is not available\n");
+                        pComponentPrivate->cbInfo.EventHandler(pHandle,
+                                                               pHandle->pApplicationPrivate,
+                                                               OMX_EventError,
+                                                               OMX_ErrorInsufficientResources,
+                                                               OMX_TI_ErrorSevere,
+                                                               NULL);
+                        eError = OMX_ErrorNone;
+                        break;
+                    }
+                }
+#endif
+
+                if ( pPortDefIn->bEnabled == OMX_TRUE && pPortDefOut->bEnabled == OMX_TRUE ) 
+                {
+                    pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
+                    while ( (!pPortDefIn->bPopulated) || (!pPortDefOut->bPopulated)) 
+                    {
+                        OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
+                        pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
+                    }
+                    pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
+                }
+
+                eError =  GetJpegEncLCMLHandle(pHandle);
+
+                if ( eError != OMX_ErrorNone ) 
+                {
+                    OMX_PRDSP4(pComponentPrivate->dbg, "GetLCMLHandle failed...\n");
+                    goto EXIT;
+                }
+                pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
+                lcml_dsp = (((LCML_DSP_INTERFACE*)pLcmlHandle)->dspCodec);
+                Fill_JpegEncLCMLInitParams(lcml_dsp,arr, pHandle);
+                cb.LCML_Callback = (void *) JpegEncLCML_Callback;
+                OMX_PRDSP2(pComponentPrivate->dbg, "Start LCML_InitMMCodec JPEG Phase in JPEG.....\n");
+
+                /*  calling initMMCodec to init codec with details filled earlier   */
+                eError = LCML_InitMMCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle, NULL, &pLcmlHandle, NULL, &cb);
+                if ( eError != OMX_ErrorNone ) 
+                {
+                    OMX_PRDSP4(pComponentPrivate->dbg, "InitMMCodec failed...  %x\n", eError);
+                    printf("Error : InitMMCodec failed...>>>>>>");
+                    pComponentPrivate->cbInfo.EventHandler(pHandle,
+                                                           pHandle->pApplicationPrivate,
+                                                           OMX_EventError,
+                                                           OMX_ErrorHardware,
+                                                           OMX_TI_ErrorSevere,
+                                                           NULL);
+                    goto EXIT;
+                }
+                pComponentPrivate->isLCMLActive = 1;
+                OMX_PRDSP2(pComponentPrivate->dbg, "End LCML_InitMMCodec Phase\n");
+
+
+                pComponentPrivate->bFlushComplete = OMX_FALSE;
+                OMX_PRSTATE2(pComponentPrivate->dbg, "State has been Set to Idle\n");
+                pComponentPrivate->nCurState = OMX_StateIdle;
+
+                /* Decrement reference count with signal enabled */
+                if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) 
+                {
+                       return OMX_ErrorUndefined;
+                }
+
+                pComponentPrivate->nInPortIn   = pComponentPrivate->nInPortOut   = 0;
+                pComponentPrivate->nOutPortIn = pComponentPrivate->nOutPortOut = 0;
+
+
+#ifdef RESOURCE_MANAGER_ENABLED
+                eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateIdle,  3456, NULL);
+                if (eError != OMX_ErrorNone) 
+                {
+                    OMX_PRMGR4(pComponentPrivate->dbg, "Resources not available Loaded ->Idle\n");
 
                     pComponentPrivate->cbInfo.EventHandler(pHandle,
                                                            pHandle->pApplicationPrivate,
@@ -1513,360 +1661,329 @@ OMX_ERRORTYPE HandleJpegEncCommand (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
                                                            OMX_ErrorInsufficientResources,
                                                            OMX_TI_ErrorSevere,
                                                            NULL);
-                    eError = OMX_ErrorNone;
                     break;
                 }
-            }
 #endif
 
-            if ( pPortDefIn->bEnabled == OMX_TRUE && pPortDefOut->bEnabled == OMX_TRUE ) {
-                pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
-                while ( (!pPortDefIn->bPopulated) || (!pPortDefOut->bPopulated)) {
-                    OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
-                    pthread_cond_wait(&pComponentPrivate->populate_cond, &pComponentPrivate->jpege_mutex_app);
-                }
-                pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
-            }
+#ifdef __PERF_INSTRUMENTATION__
+                PERF_Boundary(pComponentPrivate->pPERFcomp,
+                              PERF_BoundaryComplete | PERF_BoundarySetup);
+#endif
 
-            eError =  GetJpegEncLCMLHandle(pHandle);
-
-            if ( eError != OMX_ErrorNone ) {
-                OMX_PRDSP4(pComponentPrivate->dbg, "GetLCMLHandle failed...\n");
-                goto EXIT;
-            }
-            pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
-            lcml_dsp = (((LCML_DSP_INTERFACE*)pLcmlHandle)->dspCodec);
-            Fill_JpegEncLCMLInitParams(lcml_dsp,arr, pHandle);
-            cb.LCML_Callback = (void *) JpegEncLCML_Callback;
-            OMX_PRDSP2(pComponentPrivate->dbg, "Start LCML_InitMMCodec JPEG Phase in JPEG.....\n");
-
-            /*  calling initMMCodec to init codec with details filled earlier   */
-            eError = LCML_InitMMCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle, NULL, &pLcmlHandle, NULL, &cb);
-            if ( eError != OMX_ErrorNone ) {
-                OMX_PRDSP4(pComponentPrivate->dbg, "InitMMCodec failed...  %x\n", eError);
-                printf("Error : InitMMCodec failed...>>>>>>");
-                pComponentPrivate->cbInfo.EventHandler(pHandle,
-                                                       pHandle->pApplicationPrivate,
-                                                       OMX_EventError,
-                                                       OMX_ErrorHardware,
-                                                       OMX_TI_ErrorSevere,
-                                                       NULL);
-                goto EXIT;
-            }
-            pComponentPrivate->isLCMLActive = 1;
-            OMX_PRDSP2(pComponentPrivate->dbg, "End LCML_InitMMCodec Phase\n");
-
-
-            pComponentPrivate->bFlushComplete = OMX_FALSE;
-            OMX_PRSTATE2(pComponentPrivate->dbg, "State has been Set to Idle\n");
-            pComponentPrivate->nCurState = OMX_StateIdle;
-
-            /* Decrement reference count with signal enabled */
-            if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) {
-                   return OMX_ErrorUndefined;
-            }
-
-            pComponentPrivate->nInPortIn   = pComponentPrivate->nInPortOut   = 0;
-            pComponentPrivate->nOutPortIn = pComponentPrivate->nOutPortOut = 0;
-
-
-#ifdef RESOURCE_MANAGER_ENABLED
-            eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateIdle,  3456, NULL);
-            if (eError != OMX_ErrorNone) {
-                OMX_PRMGR4(pComponentPrivate->dbg, "Resources not available Loaded ->Idle\n");
-
-                pComponentPrivate->cbInfo.EventHandler(pHandle,
-                                                       pHandle->pApplicationPrivate,
-                                                       OMX_EventError,
-                                                       OMX_ErrorInsufficientResources,
-                                                       OMX_TI_ErrorSevere,
-                                                       NULL);
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                  pComponentPrivate->pHandle->pApplicationPrivate,
+                              OMX_EventCmdComplete,
+                              OMX_CommandStateSet,
+                              pComponentPrivate->nCurState,
+                              NULL);
                 break;
+
             }
-#endif
-
-#ifdef __PERF_INSTRUMENTATION__
-            PERF_Boundary(pComponentPrivate->pPERFcomp,
-                          PERF_BoundaryComplete | PERF_BoundarySetup);
-#endif
-
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                              pComponentPrivate->pHandle->pApplicationPrivate,
-                          OMX_EventCmdComplete,
-                          OMX_CommandStateSet,
-                          pComponentPrivate->nCurState,
-                          NULL);
-            break;
-
-        }
-        else if ( pComponentPrivate->nCurState == OMX_StateExecuting ||
-                  pComponentPrivate->nCurState == OMX_StatePause ) {
-#ifdef __PERF_INSTRUMENTATION__
-            PERF_Boundary(pComponentPrivate->pPERFcomp,
-                          PERF_BoundaryComplete | PERF_BoundarySteadyState);
-#endif
-
-          pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
-          pComponentPrivate->bDSPStopAck = OMX_FALSE;
-          OMX_PRDSP2(pComponentPrivate->dbg, "bDSPStopAck is %d\n", pComponentPrivate->bDSPStopAck);
-          eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,MMCodecControlStop,NULL);
-          pComponentPrivate->nApp_nBuf= 1;
-         /* HandleJpegEncCommandFlush(pComponentPrivate, -1); */
-          /*
-          if ( pComponentPrivate->isLCMLActive ==1 ) {
-              LCML_ControlCodec(((LCML_DSP_INTERFACE*)pComponentPrivate->pLCML)->pCodecinterfacehandle,EMMCodecControlDestroy,NULL);
-              dlclose(pComponentPrivate->pDllHandle);
-              pComponentPrivate->isLCMLActive = 0;
-          }
-          */
-
-#ifdef RESOURCE_MANAGER_ENABLED
-
-        eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateIdle, 3456, NULL);
-        if (eError != OMX_ErrorNone) {
-	        OMX_PRMGR4(pComponentPrivate->dbg, "Resources not available Executing ->Idle\n");
-            pComponentPrivate->nCurState = OMX_StateWaitForResources;
-            pComponentPrivate->cbInfo.EventHandler(pHandle,
-                                                   pHandle->pApplicationPrivate,
-                                                   OMX_EventCmdComplete,
-                                                   OMX_CommandStateSet,
-                                                   pComponentPrivate->nCurState,
-                                                   NULL);
-            break;
-        }
-#endif
-          pComponentPrivate->ExeToIdleFlag |= JPEGE_BUFFERBACK;
-
-        OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc: before stop lock\n");
-        pthread_mutex_lock(&pComponentPrivate->jpege_mutex);
-        /*
-        while ((pComponentPrivate->ExeToIdleFlag & 0x3) != JPEGE_IDLEREADY) {
-            OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
-            pthread_cond_wait(&pComponentPrivate->stop_cond, &pComponentPrivate->jpege_mutex);
-        }
-        */
-        while (pComponentPrivate->bDSPStopAck == OMX_FALSE) {
-            OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
-            pthread_cond_wait(&pComponentPrivate->stop_cond, &pComponentPrivate->jpege_mutex);
-        }
-        pthread_mutex_unlock(&pComponentPrivate->jpege_mutex);
-
-        OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc:got STOP ack from DSP\n");
-
-        int i;
-        for (i = 0; i < (int)(pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->nBufferCountActual); i ++) {
-            JPEGENC_BUFFER_PRIVATE    *pBuffPrivate = NULL;
-            OMX_BUFFERHEADERTYPE* pBuffHead = NULL;
-
-            pBuffHead = pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pBufferPrivate[i]->pBufferHdr;
-            pBuffPrivate = pBuffHead->pInputPortPrivate;
-
-            OMX_PRBUFFER1(pComponentPrivate->dbg, "JPEG enc:: owner %d \n", pBuffPrivate->eBufferOwner);
-            if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) {
-                if (pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pBufSupplier != OMX_BufferSupplyInput) {
-                    if(pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->hTunnelComponent == NULL){
-                        OMX_PRBUFFER2(pComponentPrivate->dbg, "Sending buffer to app\n");
-                        OMX_PRDSP2(pComponentPrivate->dbg, "Handle error from DSP/bridge\n");
-                        pComponentPrivate->nInPortOut ++;
-                        pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
-                        pComponentPrivate->cbInfo.EmptyBufferDone(
-                                   pComponentPrivate->pHandle,
-                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                   pBuffHead);
-                }
-                else{
-                    OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc:: Sending beffer to tunnel, pHandle=%p\n", pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->hTunnelComponent);
-                    pBuffHead->nFilledLen = 0;
-                    pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
-                    eError = OMX_FillThisBuffer(pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->hTunnelComponent,
-                                                pBuffHead);
-                }
-            }
-        }
-    }
-
-        OMX_PRBUFFER2(pComponentPrivate->dbg, "returned all input buffers\n");
-
-        for (i = 0; i < (int)(pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->nBufferCountActual); i ++) {
-            JPEGENC_BUFFER_PRIVATE    *pBuffPrivate = NULL;
-            OMX_BUFFERHEADERTYPE* pBuffHead = NULL;
-
-            pBuffHead = pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr;
-            pBuffPrivate = pBuffHead->pOutputPortPrivate;
-
-            OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer %p owner %d \n", pBuffHead, pBuffPrivate->eBufferOwner);
-            if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) {
-                if (pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufSupplier != OMX_BufferSupplyOutput) {
-                    if(pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->hTunnelComponent == NULL){
-                        OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc:: Sending OUTPUT buffer to app\n");
-                        OMX_PRDSP2(pComponentPrivate->dbg, "Handle error from DSP/bridge\n");
-                        pComponentPrivate->nOutPortOut ++;
-                        pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
-                        pComponentPrivate->cbInfo.FillBufferDone(
-                                   pComponentPrivate->pHandle,
-                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                   pBuffHead);
-                    }
-                    else{
-                        OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc:: Sending OUTPUT buffer to Tunnel component\n");
-                        pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
-                    eError = OMX_EmptyThisBuffer(pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->hTunnelComponent,
-                                                pBuffHead);
-                    }
-                }
-            }
-        }
-        OMX_PRBUFFER2(pComponentPrivate->dbg, "returned all output buffers\n");
-
-         pComponentPrivate->nCurState = OMX_StateIdle;
-
-         /* Decrement reference count with signal enabled */
-         if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) {
-              return OMX_ErrorUndefined;
-         }
-
-         pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-               pComponentPrivate->pHandle->pApplicationPrivate,
-               OMX_EventCmdComplete,
-               OMX_CommandStateSet,
-               pComponentPrivate->nCurState,
-               NULL);
-             pComponentPrivate->ExeToIdleFlag = 0;
-    }
-        else {
-         OMX_PRSTATE4(pComponentPrivate->dbg, "Error: Invalid State Given by Application\n");
-         pComponentPrivate->cbInfo.EventHandler (pComponentPrivate->pHandle,
-                                                    pComponentPrivate->pHandle->pApplicationPrivate,
-                            OMX_EventError,
-                                                    OMX_ErrorIncorrectStateTransition,
-                                                    OMX_TI_ErrorMinor,
-                                                    "Invalid State");
-        }
-    break;
-
-    case OMX_StateExecuting:
-
-        OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateExecuting \n");
-        OMX_PRBUFFER2(pComponentPrivate->dbg, "In exec in %lu out %lu\n", pComponentPrivate->nInPortIn, pComponentPrivate->nOutPortOut);
-        if ( pComponentPrivate->nCurState == OMX_StateExecuting ) {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError,
-                                                   OMX_ErrorSameState,
-                                                   OMX_TI_ErrorMinor,
-                                                   NULL);
-        }
-        else if ( pComponentPrivate->nCurState == OMX_StateIdle || pComponentPrivate->nCurState == OMX_StatePause ) {
-
-#ifdef __PERF_INSTRUMENTATION__
-            PERF_Boundary(pComponentPrivate->pPERFcomp,
-                          PERF_BoundaryStart | PERF_BoundarySteadyState);
-#endif
-
-#if 1
-        eError = SendDynamicParam(pComponentPrivate);
-            if (eError != OMX_ErrorNone ) {
-                OMX_PRDSP4(pComponentPrivate->dbg, "SETSTATUS failed...  %x\n", eError);
-                goto EXIT;
-        }
-#endif
-
-
-
-
-        OMX_PRDSP2(pComponentPrivate->dbg, "after SendDynamicParam\n");
-        pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
-        eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlStart,NULL);
-
-#ifdef RESOURCE_MANAGER_ENABLED
-
-    eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateExecuting, 3456, NULL);
-    if (eError != OMX_ErrorNone) {
-        OMX_PRMGR4(pComponentPrivate->dbg, "Resources not available\n");
-        pComponentPrivate->nCurState = OMX_StateWaitForResources;
-        pComponentPrivate->cbInfo.EventHandler(pHandle,
-                                               pHandle->pApplicationPrivate,
-                                               OMX_EventCmdComplete,
-                                               OMX_CommandStateSet,
-                                               pComponentPrivate->nCurState,
-                                               NULL);
-        break;
-        }
-#endif
-
-        pComponentPrivate->nCurState = OMX_StateExecuting;
-        OMX_PRSTATE2(pComponentPrivate->dbg, "State has been set to Executing\n"); 
-#ifdef __PERF_INSTRUMENTATION__
-            PERF_Boundary(pComponentPrivate->pPERFcomp,
-                          PERF_BoundarySteadyState| PERF_BoundaryComplete);
-#endif
-
-         /* Decrement reference count with signal enabled */
-         if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) {
-               return OMX_ErrorUndefined;
-         }
-
-        pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                               pComponentPrivate->pHandle->pApplicationPrivate,
-                                               OMX_EventCmdComplete,
-                                               OMX_CommandStateSet,
-                                               pComponentPrivate->nCurState,
-                                               NULL);
-        } else {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError,
-                                                   OMX_ErrorIncorrectStateTransition,
-                                                   OMX_TI_ErrorMinor,
-                                                   NULL);
-        }
-        break;
-
-    case OMX_StatePause:
-        OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StatePause\n");
-
-        pComponentPrivate->nToState = OMX_StatePause;
+            else if ( pComponentPrivate->nCurState == OMX_StateExecuting ||
+                      pComponentPrivate->nCurState == OMX_StatePause ) 
+            {
 #ifdef __PERF_INSTRUMENTATION__
                 PERF_Boundary(pComponentPrivate->pPERFcomp,
                               PERF_BoundaryComplete | PERF_BoundarySteadyState);
 #endif
 
-        if ( pComponentPrivate->nCurState == OMX_StatePause ) {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError, OMX_ErrorSameState, OMX_TI_ErrorMinor , NULL);
-        } else if ( pComponentPrivate->nCurState == OMX_StateExecuting || pComponentPrivate->nCurState == OMX_StateIdle ) {
+                pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
+                pComponentPrivate->bDSPStopAck = OMX_FALSE;
+                OMX_PRDSP2(pComponentPrivate->dbg, "bDSPStopAck is %d\n", pComponentPrivate->bDSPStopAck);
+                eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,MMCodecControlStop,NULL);
+                pComponentPrivate->nApp_nBuf= 1;
+                /* HandleJpegEncCommandFlush(pComponentPrivate, -1); */
+                /*
+                if ( pComponentPrivate->isLCMLActive ==1 ) 
+                {
+                    LCML_ControlCodec(((LCML_DSP_INTERFACE*)pComponentPrivate->pLCML)->pCodecinterfacehandle,EMMCodecControlDestroy,NULL);
+                    dlclose(pComponentPrivate->pDllHandle);
+                    pComponentPrivate->isLCMLActive = 0;
+                }
+                */
 
-            pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
-            eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlPause,NULL);
-            if ( eError != OMX_ErrorNone ) {
-                OMX_PRDSP4(pComponentPrivate->dbg, "Error during EMMCodecControlPause. Error: %d.\n", eError );
-                goto EXIT;
+#ifdef RESOURCE_MANAGER_ENABLED
+
+                eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateIdle, 3456, NULL);
+                if (eError != OMX_ErrorNone) 
+                {
+                    OMX_PRMGR4(pComponentPrivate->dbg, "Resources not available Executing ->Idle\n");
+                    pComponentPrivate->nCurState = OMX_StateWaitForResources;
+                    pComponentPrivate->cbInfo.EventHandler(pHandle,
+                                                           pHandle->pApplicationPrivate,
+                                                           OMX_EventCmdComplete,
+                                                           OMX_CommandStateSet,
+                                                           pComponentPrivate->nCurState,
+                                                           NULL);
+                    break;
+                }
+#endif
+                pComponentPrivate->ExeToIdleFlag |= JPEGE_BUFFERBACK;
+
+                LOGD( "JPEG enc: before stop lock\n");
+                pthread_mutex_lock(&pComponentPrivate->jpege_mutex);
+                /*
+                while ((pComponentPrivate->ExeToIdleFlag & 0x3) != JPEGE_IDLEREADY) 
+                {
+                    OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
+                    pthread_cond_wait(&pComponentPrivate->stop_cond, &pComponentPrivate->jpege_mutex);
+                }
+                */
+                while (pComponentPrivate->bDSPStopAck == OMX_FALSE) 
+                {
+                    OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
+                    pthread_cond_wait(&pComponentPrivate->stop_cond, &pComponentPrivate->jpege_mutex);
+                }
+                pthread_mutex_unlock(&pComponentPrivate->jpege_mutex);
+
+                LOGD("JPEG enc:got STOP ack from DSP\n");
+
+                int i;
+                for (i = 0; i < (int)(pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pPortDef->nBufferCountActual); i ++) 
+                {
+                    JPEGENC_BUFFER_PRIVATE    *pBuffPrivate = NULL;
+                    OMX_BUFFERHEADERTYPE* pBuffHead = NULL;
+
+                    pBuffHead = pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pBufferPrivate[i]->pBufferHdr;
+                    pBuffPrivate = pBuffHead->pInputPortPrivate;
+
+                    OMX_PRBUFFER1(pComponentPrivate->dbg, "JPEG enc:: owner %d \n", pBuffPrivate->eBufferOwner);
+                    if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) 
+                    {
+                        if (pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->pBufSupplier != OMX_BufferSupplyInput) 
+                        {
+                            if(pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->hTunnelComponent == NULL)
+                            {
+                                OMX_PRBUFFER2(pComponentPrivate->dbg, "Sending buffer to app\n");
+                                OMX_PRDSP2(pComponentPrivate->dbg, "Handle error from DSP/bridge\n");
+                                pComponentPrivate->nInPortOut ++;
+                                pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
+                                pComponentPrivate->cbInfo.EmptyBufferDone(
+                                           pComponentPrivate->pHandle,
+                                           pComponentPrivate->pHandle->pApplicationPrivate,
+                                           pBuffHead);
+                        }
+                        else
+                        {
+                            OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc:: Sending beffer to tunnel, pHandle=%p\n", pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->hTunnelComponent);
+                            pBuffHead->nFilledLen = 0;
+                            pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
+                            eError = OMX_FillThisBuffer(pComponentPrivate->pCompPort[JPEGENC_INP_PORT]->hTunnelComponent,
+                                                        pBuffHead);
+                        }
+                    }
+                }
             }
-            /*
-            pComponentPrivate->nCurState = OMX_StatePause; */
+
+            OMX_PRBUFFER2(pComponentPrivate->dbg, "returned all input buffers\n");
+            LOGD("returned all input buffers\n");
+
+            for (i = 0; i < (int)(pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef->nBufferCountActual); i ++) 
+            {
+                JPEGENC_BUFFER_PRIVATE    *pBuffPrivate = NULL;
+                OMX_BUFFERHEADERTYPE* pBuffHead = NULL;
+
+                pBuffHead = pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufferPrivate[i]->pBufferHdr;
+                pBuffPrivate = pBuffHead->pOutputPortPrivate;
+
+                OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer %p owner %d \n", pBuffHead, pBuffPrivate->eBufferOwner);
+                if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) 
+                {
+                    if (pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pBufSupplier != OMX_BufferSupplyOutput) 
+                    {
+                        if(pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->hTunnelComponent == NULL)
+                        {
+                            OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc:: Sending OUTPUT buffer to app\n");
+                            OMX_PRDSP2(pComponentPrivate->dbg, "Handle error from DSP/bridge\n");
+                            pComponentPrivate->nOutPortOut ++;
+                            pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
+                            pComponentPrivate->cbInfo.FillBufferDone(
+                                       pComponentPrivate->pHandle,
+                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                       pBuffHead);
+                        }
+                        else
+                        {
+                            OMX_PRBUFFER2(pComponentPrivate->dbg, "JPEG enc:: Sending OUTPUT buffer to Tunnel component\n");
+                            pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
+                            eError = OMX_EmptyThisBuffer(pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->hTunnelComponent,
+                                                         pBuffHead);
+                        }
+                    }
+                }
+            }
+            OMX_PRBUFFER2(pComponentPrivate->dbg, "returned all output buffers\n");
+            LOGD("returned all output buffers\n");
+            pComponentPrivate->nCurState = OMX_StateIdle;
+
             /* Decrement reference count with signal enabled */
-            if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) {
-                   return OMX_ErrorUndefined;
-           }
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventCmdComplete, OMX_CommandStateSet, pComponentPrivate->nCurState, NULL);
-        } else {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError, OMX_ErrorIncorrectStateTransition, OMX_TI_ErrorMinor , NULL);
+            if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) 
+            {
+                return OMX_ErrorUndefined;
+            }
+
+            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                   pComponentPrivate->pHandle->pApplicationPrivate,
+                                                   OMX_EventCmdComplete,
+                                                   OMX_CommandStateSet,
+                                                   pComponentPrivate->nCurState,
+                                                   NULL);
+            pComponentPrivate->ExeToIdleFlag = 0;
+            LOGD ("SEND EVENT FOR IDLE REQUEST");
+        }
+        else 
+        {
             OMX_PRSTATE4(pComponentPrivate->dbg, "Error: Invalid State Given by Application\n");
+                         pComponentPrivate->cbInfo.EventHandler (pComponentPrivate->pHandle,
+                         pComponentPrivate->pHandle->pApplicationPrivate,
+                         OMX_EventError,
+                         OMX_ErrorIncorrectStateTransition,
+                         OMX_TI_ErrorMinor,
+                         "Invalid State");
         }
         break;
 
+        case OMX_StateExecuting:
 
-    case OMX_StateInvalid:
-        OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateInvalid::\n");
-        if ( pComponentPrivate->nCurState == OMX_StateInvalid ) {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle, pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError, OMX_ErrorSameState, OMX_TI_ErrorMinor , NULL);
-        }
-        if ( pComponentPrivate->nCurState != OMX_StateLoaded ) {
-            OMX_PRBUFFER2(pComponentPrivate->dbg, "HandleJpegEncInternalFlush \n");
-            eError = HandleJpegEncInternalFlush(pComponentPrivate, nParam1);
+            OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateExecuting \n");
+            OMX_PRBUFFER2(pComponentPrivate->dbg, "In exec in %lu out %lu\n", pComponentPrivate->nInPortIn, pComponentPrivate->nOutPortOut);
+            LOGD ("HandleCommand: Cmd OMX_StateExecuting \n");
+            LOGD ("In exec in %lu out %lu\n", pComponentPrivate->nInPortIn, pComponentPrivate->nOutPortOut);
+
+            if ( pComponentPrivate->nCurState == OMX_StateExecuting ) {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError,
+                                                       OMX_ErrorSameState,
+                                                       OMX_TI_ErrorMinor,
+                                                       NULL);
+            }
+            else if ( pComponentPrivate->nCurState == OMX_StateIdle || pComponentPrivate->nCurState == OMX_StatePause ) 
+            {
+#ifdef __PERF_INSTRUMENTATION__
+                PERF_Boundary(pComponentPrivate->pPERFcomp,
+                              PERF_BoundaryStart | PERF_BoundarySteadyState);
+#endif
+
+#if 1
+                eError = SendDynamicParam(pComponentPrivate);
+                if (eError != OMX_ErrorNone ) 
+                {
+                    OMX_PRDSP4(pComponentPrivate->dbg, "SETSTATUS failed...  %x\n", eError);
+                    goto EXIT;
+                }
+#endif
+
+
+
+
+                OMX_PRDSP2(pComponentPrivate->dbg, "after SendDynamicParam\n");
+                pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
+                eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlStart,NULL);
+
+#ifdef RESOURCE_MANAGER_ENABLED
+
+                eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateExecuting, 3456, NULL);
+                if (eError != OMX_ErrorNone) 
+                {
+                    OMX_PRMGR4(pComponentPrivate->dbg, "Resources not available\n");
+                    pComponentPrivate->nCurState = OMX_StateWaitForResources;
+                    pComponentPrivate->cbInfo.EventHandler(pHandle,
+                                                           pHandle->pApplicationPrivate,
+                                                           OMX_EventCmdComplete,
+                                                           OMX_CommandStateSet,
+                                                           pComponentPrivate->nCurState,
+                                                           NULL);
+                    break;
+                }
+#endif
+
+                pComponentPrivate->nCurState = OMX_StateExecuting;
+                OMX_PRSTATE2(pComponentPrivate->dbg, "State has been set to Executing\n"); 
+#ifdef __PERF_INSTRUMENTATION__
+                PERF_Boundary(pComponentPrivate->pPERFcomp,
+                              PERF_BoundarySteadyState| PERF_BoundaryComplete);
+#endif
+
+               /* Decrement reference count with signal enabled */
+                if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) 
+                {
+                     return OMX_ErrorUndefined;
+                }
+
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventCmdComplete,
+                                                       OMX_CommandStateSet,
+                                                       pComponentPrivate->nCurState,
+                                                       NULL);
+            } 
+            else 
+            {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError,
+                                                       OMX_ErrorIncorrectStateTransition,
+                                                       OMX_TI_ErrorMinor,
+                                                       NULL);
+            }
+            break;
+
+        case OMX_StatePause:
+            OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StatePause\n");
+            LOGD ("HandleCommand: Cmd OMX_StatePause\n");
+            pComponentPrivate->nToState = OMX_StatePause;
+#ifdef __PERF_INSTRUMENTATION__
+            PERF_Boundary(pComponentPrivate->pPERFcomp,
+                          PERF_BoundaryComplete | PERF_BoundarySteadyState);
+#endif
+
+            if ( pComponentPrivate->nCurState == OMX_StatePause ) 
+            {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError, OMX_ErrorSameState, OMX_TI_ErrorMinor , NULL);
+            } 
+            else if ( pComponentPrivate->nCurState == OMX_StateExecuting || pComponentPrivate->nCurState == OMX_StateIdle ) 
+            {
+
+                pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
+                eError = LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlPause,NULL);
+                if ( eError != OMX_ErrorNone ) 
+                {
+                    OMX_PRDSP4(pComponentPrivate->dbg, "Error during EMMCodecControlPause. Error: %d.\n", eError );
+                    goto EXIT;
+                }
+                /*
+              pComponentPrivate->nCurState = OMX_StatePause;
+              /* Decrement reference count with signal enabled */
+                if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) 
+                {
+                     return OMX_ErrorUndefined;
+                }
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,pComponentPrivate->pHandle->pApplicationPrivate,
+                                                     OMX_EventCmdComplete, OMX_CommandStateSet, pComponentPrivate->nCurState, NULL);
+            } 
+            else 
+            {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError, OMX_ErrorIncorrectStateTransition, OMX_TI_ErrorMinor , NULL);
+                OMX_PRSTATE4(pComponentPrivate->dbg, "Error: Invalid State Given by Application\n");
+            }
+            break;
+
+
+        case OMX_StateInvalid:
+            OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateInvalid::\n");
+            LOGD ("HandleCommand: Cmd OMX_StateInvalid::\n");
+            if ( pComponentPrivate->nCurState == OMX_StateInvalid ) 
+            {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle, pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError, OMX_ErrorSameState, OMX_TI_ErrorMinor , NULL);
+            }
+            if ( pComponentPrivate->nCurState != OMX_StateLoaded ) 
+            {
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "HandleJpegEncInternalFlush \n");
+                eError = HandleJpegEncInternalFlush(pComponentPrivate, nParam1);
             }
 
             pComponentPrivate->nCurState = OMX_StateInvalid;
@@ -1887,42 +2004,46 @@ OMX_ERRORTYPE HandleJpegEncCommand (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
                                        OMX_TI_ErrorSevere, 
                                        NULL);
             }
-        break;
+            break;
 
-    case OMX_StateLoaded:
-        if ( pComponentPrivate->nCurState == OMX_StateLoaded ) {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError, 
-                                                   OMX_ErrorSameState, 
-                                                   OMX_TI_ErrorMinor , 
-                                                   NULL);
-            
-        } else if ( pComponentPrivate->nCurState == OMX_StateIdle ||
-                    pComponentPrivate->nCurState == OMX_StateWaitForResources ) {
-            /* Ports have to be unpopulated before transition completes */
-            OMX_PRSTATE2(pComponentPrivate->dbg, "from idle to loaded\n");
-            
-            pLcmlHandle = (LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
-            if ( pComponentPrivate->pLCML != NULL && pComponentPrivate->isLCMLActive) {
-                pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
-                OMX_PRDSP2(pComponentPrivate->dbg, "try to close library again %p\n", pComponentPrivate->pLCML);
-                LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlDestroy,NULL);
-                OMX_PRDSP2(pComponentPrivate->dbg, "after close library again %p\n", pComponentPrivate->pLCML);
-                pComponentPrivate->pLCML = NULL;
-                dlclose(pComponentPrivate->pDllHandle);
-                pComponentPrivate->isLCMLActive = 0;
+        case OMX_StateLoaded:
+            if ( pComponentPrivate->nCurState == OMX_StateLoaded ) 
+            {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError, 
+                                                       OMX_ErrorSameState, 
+                                                       OMX_TI_ErrorMinor , 
+                                                       NULL);
+                
+            } 
+            else if ( pComponentPrivate->nCurState == OMX_StateIdle ||
+                      pComponentPrivate->nCurState == OMX_StateWaitForResources ) 
+            {
+                /* Ports have to be unpopulated before transition completes */
+                OMX_PRSTATE2(pComponentPrivate->dbg, "from idle to loaded\n");
+                
+                pLcmlHandle = (LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
+                if ( pComponentPrivate->pLCML != NULL && pComponentPrivate->isLCMLActive) 
+                {
+                    pLcmlHandle =(LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
+                    OMX_PRDSP2(pComponentPrivate->dbg, "try to close library again %p\n", pComponentPrivate->pLCML);
+                    LCML_ControlCodec(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,EMMCodecControlDestroy,NULL);
+                    OMX_PRDSP2(pComponentPrivate->dbg, "after close library again %p\n", pComponentPrivate->pLCML);
+                    pComponentPrivate->pLCML = NULL;
+                    dlclose(pComponentPrivate->pDllHandle);
+                    pComponentPrivate->isLCMLActive = 0;
 
-            }
-            OMX_PRDSP2(pComponentPrivate->dbg, "after release LCML\n");
+                }
+                OMX_PRDSP2(pComponentPrivate->dbg, "after release LCML\n");
 #ifdef __PERF_INSTRUMENTATION__
-            PERF_Boundary(pComponentPrivate->pPERFcomp,
-                          PERF_BoundaryStart | PERF_BoundaryCleanup);
+                PERF_Boundary(pComponentPrivate->pPERFcomp,
+                              PERF_BoundaryStart | PERF_BoundaryCleanup);
 #endif
 
 #ifdef UNDER_CE
-            nTimeout=0x0;
-        
+                nTimeout=0x0;
+            
                 while ( 1 )
                 {
                     if ( (pPortDefOut->bPopulated == OMX_FALSE) )
@@ -1931,8 +2052,8 @@ OMX_ERRORTYPE HandleJpegEncCommand (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
                     
                         
                         break;
-                    } else if ( nTimeout++ > JPEGENC_TIMEOUT )
-                    
+                    } 
+                    else if ( nTimeout++ > JPEGENC_TIMEOUT )                    
                     {
                         OMX_PRBUFFER4(pComponentPrivate->dbg, "Timeout ...\n");
                         pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle, 
@@ -1945,123 +2066,133 @@ OMX_ERRORTYPE HandleJpegEncCommand (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate
                         break;
                     }
                     /* Sleep for a while, so the application thread can allocate buffers */
-            sched_yield();
-            }
+                    sched_yield();
+                }
 #else
 
-            pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
-            while ( pPortDefIn->bPopulated || pPortDefOut->bPopulated) {
-                OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
-                pthread_cond_wait(&pComponentPrivate->unpopulate_cond, &pComponentPrivate->jpege_mutex_app);
-            }
-            pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
+                pthread_mutex_lock(&pComponentPrivate->jpege_mutex_app);
+                while ( pPortDefIn->bPopulated || pPortDefOut->bPopulated) 
+                {
+                    OMX_PRBUFFER0(pComponentPrivate->dbg, "%d in cond wait\n", __LINE__);
+                    pthread_cond_wait(&pComponentPrivate->unpopulate_cond, &pComponentPrivate->jpege_mutex_app);
+                }
+                pthread_mutex_unlock(&pComponentPrivate->jpege_mutex_app);
 #endif
 
 #ifdef __PERF_INSTRUMENTATION__
-                        PERF_Boundary(pComponentPrivate->pPERFcomp,
-                                      PERF_BoundaryComplete | PERF_BoundaryCleanup);
+                            PERF_Boundary(pComponentPrivate->pPERFcomp,
+                                          PERF_BoundaryComplete | PERF_BoundaryCleanup);
 #endif
 
 #ifdef RESOURCE_MANAGER_ENABLED
-            if (pComponentPrivate->nCurState != OMX_StateWaitForResources) {
-                eError= RMProxy_NewSendCommand(pHandle,  RMProxy_FreeResource, OMX_JPEG_Encoder_COMPONENT, 0, 3456, NULL);
-                if (eError != OMX_ErrorNone) {
-                    OMX_PRMGR4(pComponentPrivate->dbg, "Cannot Free Resources\n");                    
+                if (pComponentPrivate->nCurState != OMX_StateWaitForResources) 
+                {
+                    eError= RMProxy_NewSendCommand(pHandle,  RMProxy_FreeResource, OMX_JPEG_Encoder_COMPONENT, 0, 3456, NULL);
+                    if (eError != OMX_ErrorNone) 
+                    {
+                        OMX_PRMGR4(pComponentPrivate->dbg, "Cannot Free Resources\n");                    
+                        pComponentPrivate->cbInfo.EventHandler(pHandle,
+                                                               pHandle->pApplicationPrivate,
+                                                               OMX_EventError,
+                                                               OMX_ErrorUndefined,
+                                                               OMX_TI_ErrorMajor,
+                                                               NULL);
+                        break;
+                    }
+                }
+#endif
+
+                pComponentPrivate->nCurState = OMX_StateLoaded;            
+
+                if ((pComponentPrivate->nCurState == OMX_StateIdle) &&
+                    (pComponentPrivate->bPreempted == 1 ))
+                {
+                    
+                    pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                           pComponentPrivate->pHandle->pApplicationPrivate,
+                                                           OMX_EventError,
+                                                           OMX_ErrorResourcesLost,
+                                                           OMX_TI_ErrorSevere,
+                                                           NULL);
+                    pComponentPrivate->bPreempted = 0;
+                    
+                }
+                else 
+                {
+                    /* Decrement reference count with signal enabled */
+                    if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) 
+                    {
+                        return OMX_ErrorUndefined;
+                    }
+                    pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                           pComponentPrivate->pHandle->pApplicationPrivate,
+                                                           OMX_EventCmdComplete,
+                                                           OMX_CommandStateSet,
+                                                           OMX_StateLoaded,
+                                                           NULL);
+                }
+                
+            } 
+            else 
+            {            
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError, 
+                                                       OMX_ErrorIncorrectStateTransition, 
+                                                       OMX_TI_ErrorMinor, 
+                                                       NULL);
+            }
+            break;
+
+        case OMX_StateWaitForResources:
+            if ( pComponentPrivate->nCurState == OMX_StateWaitForResources ) 
+            {
+                pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                       pComponentPrivate->pHandle->pApplicationPrivate,
+                                                       OMX_EventError, 
+                                                       OMX_ErrorSameState, 
+                                                       OMX_TI_ErrorMinor, 
+                                                       NULL);
+            }
+            else if ( pComponentPrivate->nCurState == OMX_StateLoaded ) 
+            {
+#ifdef RESOURCE_MANAGER_ENABLED
+                eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateWaitForResources, 3456, NULL);
+                if (eError != OMX_ErrorNone) 
+                {
+                    OMX_PRMGR4(pComponentPrivate->dbg, "RMProxy_NewSendCommand(OMX_StateWaitForResources) failed\n");
                     pComponentPrivate->cbInfo.EventHandler(pHandle,
                                                            pHandle->pApplicationPrivate,
                                                            OMX_EventError,
                                                            OMX_ErrorUndefined,
-                                                           OMX_TI_ErrorMajor,
+                                                           OMX_TI_ErrorSevere,
                                                            NULL);
                     break;
                 }
-            }
 #endif
-
-            pComponentPrivate->nCurState = OMX_StateLoaded;            
-
-            if ((pComponentPrivate->nCurState == OMX_StateIdle) &&
-                 (pComponentPrivate->bPreempted == 1 )){
-                
+                pComponentPrivate->nCurState = OMX_StateWaitForResources;
                 pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
                                                        pComponentPrivate->pHandle->pApplicationPrivate,
-                                                       OMX_EventError,
-                                                       OMX_ErrorResourcesLost,
-                                                       OMX_TI_ErrorSevere,
+                                                       OMX_EventCmdComplete, 
+                                                       OMX_CommandStateSet, 
+                                                       pComponentPrivate->nCurState, 
                                                        NULL);
-                pComponentPrivate->bPreempted = 0;
-                
-            }
-            else {
-                /* Decrement reference count with signal enabled */
-                if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) {
-                  return OMX_ErrorUndefined;
-                }
+            } 
+            else 
+            {            
                 pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
                                                        pComponentPrivate->pHandle->pApplicationPrivate,
-                                                       OMX_EventCmdComplete,
-                                                       OMX_CommandStateSet,
-                                                       OMX_StateLoaded,
+                                                       OMX_EventError, 
+                                                       OMX_ErrorIncorrectStateTransition, 
+                                                       OMX_TI_ErrorMinor, 
                                                        NULL);
             }
-            
-        } 
-        else {
-        
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                   pComponentPrivate->pHandle->pApplicationPrivate,
-                                                   OMX_EventError, 
-                                                   OMX_ErrorIncorrectStateTransition, 
-                                                   OMX_TI_ErrorMinor, 
-                                                   NULL);
-        }
-        break;
+            break;
 
-    case OMX_StateWaitForResources:
-        if ( pComponentPrivate->nCurState == OMX_StateWaitForResources ) {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                                            pComponentPrivate->pHandle->pApplicationPrivate,
-                                                                            OMX_EventError, 
-                                                                            OMX_ErrorSameState, 
-                                                                            OMX_TI_ErrorMinor, 
-                                                                            NULL);
-        } else if ( pComponentPrivate->nCurState == OMX_StateLoaded ) {
-
-#ifdef RESOURCE_MANAGER_ENABLED
-            eError= RMProxy_NewSendCommand(pHandle, RMProxy_StateSet, OMX_JPEG_Encoder_COMPONENT, OMX_StateWaitForResources, 3456, NULL);
-            if (eError != OMX_ErrorNone) {
-                OMX_PRMGR4(pComponentPrivate->dbg, "RMProxy_NewSendCommand(OMX_StateWaitForResources) failed\n");
-                pComponentPrivate->cbInfo.EventHandler(pHandle,
-                                                       pHandle->pApplicationPrivate,
-                                                       OMX_EventError,
-                                                       OMX_ErrorUndefined,
-                                                       OMX_TI_ErrorSevere,
-                                                       NULL);
-                break;
-            }
-#endif
-        
-            pComponentPrivate->nCurState = OMX_StateWaitForResources;
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                                            pComponentPrivate->pHandle->pApplicationPrivate,
-                                                                            OMX_EventCmdComplete, 
-                                                                            OMX_CommandStateSet, 
-                                                                            pComponentPrivate->nCurState, 
-                                                                            NULL);
-        } else {
-            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                                            pComponentPrivate->pHandle->pApplicationPrivate,
-                                                                            OMX_EventError, 
-                                                                            OMX_ErrorIncorrectStateTransition, 
-                                                                            OMX_TI_ErrorMinor, 
-                                                                            NULL);
-        }
-        break;
-
-    case OMX_StateMax:
-        OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateMax::\n");
-        break;
-    } /* End of Switch */
+        case OMX_StateMax:
+            OMX_PRSTATE2(pComponentPrivate->dbg, "HandleCommand: Cmd OMX_StateMax::\n");
+            break;
+        } /* End of Switch */
 
 
     EXIT:
@@ -2086,45 +2217,51 @@ OMX_ERRORTYPE HandleJpegEncFreeOutputBufferFromApp(JPEGENC_COMPONENT_PRIVATE *pC
     pPortDefOut = pComponentPrivate->pCompPort[JPEGENC_OUT_PORT]->pPortDef;
 
     ret = read(pComponentPrivate->free_outBuf_Q[0], &pBuffHead, sizeof(pBuffHead));
-    if ( ret == -1 ) {
+    if ( ret == -1 ) 
+    {
         OMX_PRCOMM4(pComponentPrivate->dbg, "Error while reading from the pipe\n");
         goto EXIT;
     }
 
-    if (pBuffHead != NULL) {
+    if (pBuffHead != NULL) 
+    {
         pBuffPrivate = pBuffHead->pOutputPortPrivate;
-    } else {
+    } 
+    else 
+    {
         OMX_PRBUFFER4(pComponentPrivate->dbg, "Error while reading pBuffHead from the pipe\n");
         goto EXIT;
     }
 
-    if (pComponentPrivate->nCurState != OMX_StatePause || pComponentPrivate->nToState != OMX_StatePause) {
-
-   if ((pComponentPrivate->nCurState != OMX_StateExecuting ) ||
-       (pComponentPrivate->nToState == OMX_StateIdle) ||
-         (pPortDefOut->bEnabled == OMX_FALSE)) {
-         if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) {
-            pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
-            pComponentPrivate->nOutPortOut ++;
-            OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (return empty output buffer) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);       
-            OMX_PRBUFFER2(pComponentPrivate->dbg, "FillBufferDone (incorrect state %d) %p\n", pComponentPrivate->nCurState, pBuffHead);
-            pComponentPrivate->cbInfo.FillBufferDone(pComponentPrivate->pHandle,
-                    pComponentPrivate->pHandle->pApplicationPrivate,
-                    pBuffHead); 
-         }
-        goto EXIT;
-    }
+    if (pComponentPrivate->nCurState != OMX_StatePause || pComponentPrivate->nToState != OMX_StatePause) 
+    {
+        if ((pComponentPrivate->nCurState != OMX_StateExecuting ) ||
+            (pComponentPrivate->nToState == OMX_StateIdle) ||
+            (pPortDefOut->bEnabled == OMX_FALSE)) 
+        {
+            if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) 
+            {
+                pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
+                pComponentPrivate->nOutPortOut ++;
+                OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (return empty output buffer) %lu %lu %lu %lu\n",
+                pComponentPrivate->nInPortIn,
+                pComponentPrivate->nInPortOut,
+                pComponentPrivate->nOutPortIn,
+                pComponentPrivate->nOutPortOut);       
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "FillBufferDone (incorrect state %d) %p\n", pComponentPrivate->nCurState, pBuffHead);
+                pComponentPrivate->cbInfo.FillBufferDone(pComponentPrivate->pHandle,
+                pComponentPrivate->pHandle->pApplicationPrivate,
+                pBuffHead); 
+            }
+            goto EXIT;
+        }
     }
 
     OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (HandleJpegEncFreeOutputBufferFromApp) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut); 
+                  pComponentPrivate->nInPortIn,
+                  pComponentPrivate->nInPortOut,
+                  pComponentPrivate->nOutPortIn,
+                  pComponentPrivate->nOutPortOut); 
 
 #ifdef __PERF_INSTRUMENTATION__
     PERF_SendingFrame(pComponentPrivate->pPERFcomp,
@@ -2140,7 +2277,7 @@ OMX_ERRORTYPE HandleJpegEncFreeOutputBufferFromApp(JPEGENC_COMPONENT_PRIVATE *pC
     if (pComponentPrivate->pOutParams != NULL)
     {
         pComponentPrivate->pOutParams = (OMX_U8*)pComponentPrivate->pOutParams - PADDING_128_BYTE;
-	OMX_FREE(pComponentPrivate->pOutParams);
+        OMX_FREE(pComponentPrivate->pOutParams);
     }
     OMX_MALLOC(pComponentPrivate->pOutParams,sizeof(PPLIB_UALGRunTimeParam_t) + PADDING_256_BYTE);
     pComponentPrivate->pOutParams = (OMX_U8*)pComponentPrivate->pOutParams + PADDING_128_BYTE;
@@ -2154,19 +2291,19 @@ OMX_ERRORTYPE HandleJpegEncFreeOutputBufferFromApp(JPEGENC_COMPONENT_PRIVATE *pC
     }
 
     eError = SendDynamicPPLibParam(pComponentPrivate,pComponentPrivate->pOutParams);
-       if (eError != OMX_ErrorNone ) {
-           goto EXIT;
-       }
+    if (eError != OMX_ErrorNone ) {
+        goto EXIT;
+    }
 
 
-       eError = LCML_QueueBuffer(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,
-                                 EMMCodecOuputBuffer,
-                                 pBuffHead->pBuffer,
-                                 pPortDefOut->nBufferSize,
-                                 0,
-                                 (OMX_U8 *)pComponentPrivate->pOutParams,
-                                 sizeof(PPLIB_UALGRunTimeParam_t),
-                                 (OMX_U8 *)  pBuffHead);
+    eError = LCML_QueueBuffer(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,
+                              EMMCodecOuputBuffer,
+                              pBuffHead->pBuffer,
+                              pPortDefOut->nBufferSize,
+                              0,
+                              (OMX_U8 *)pComponentPrivate->pOutParams,
+                              sizeof(PPLIB_UALGRunTimeParam_t),
+                              (OMX_U8 *)  pBuffHead);
 
 #else
     eError = LCML_QueueBuffer(((LCML_DSP_INTERFACE*)pLcmlHandle)->pCodecinterfacehandle,
@@ -2192,26 +2329,31 @@ OMX_U32 CalculateParamsSize (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate) {
     i+= 4; /* 4 bytes for the size of the whole array */
 
     /* Set Custom Quantization Table */
-    if (pComponentPrivate->bSetLumaQuantizationTable && pComponentPrivate->bSetChromaQuantizationTable) {
+    if (pComponentPrivate->bSetLumaQuantizationTable && pComponentPrivate->bSetChromaQuantizationTable) 
+    {
         i+=4;  /* 4 bytes for the Quantization table TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
         i+=256; /* 256 bytes for the Quantization table data*/
     }
 
     /* Set Custom Huffman Table */
-    if (pComponentPrivate->bSetHuffmanTable) {
+    if (pComponentPrivate->bSetHuffmanTable) 
+    {
         i+=4;  /* 4 bytes for the Huffman table TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
-        if (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) % 4) {
+        if (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) % 4) 
+        {
             i += (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) + (4 - (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) % 4)));
         }
-        else {
+        else 
+        {
             i += sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE);
         }
     }
 
     /* handle APP0 marker (JFIF)*/
-    if(pComponentPrivate->sAPP0.bMarkerEnabled) {
+    if(pComponentPrivate->sAPP0.bMarkerEnabled) 
+    {
         i+=4;  /* 4 bytes for the Number of buffers TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
         i+=4;  /* 4 bytes for the actual number of buffers (just 1 buffer) */
@@ -2219,19 +2361,22 @@ OMX_U32 CalculateParamsSize (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate) {
 
         /* if thumbnail is set, or if explicity specified by application, set the marker from algo, otherwise set it from application */
         if ((pComponentPrivate->sAPP0.nThumbnailWidth > 0 && pComponentPrivate->sAPP0.nThumbnailHeight > 0)
-        || pComponentPrivate->sAPP0.nMarkerSize <= 0) {
+        || pComponentPrivate->sAPP0.nMarkerSize <= 0) 
+        {
             i+=4;   /* 4 bytes for the size of this TAG */
             i+=4;   /* 4 bytes for the actual data of this TAG */
         }
         else {
             i+=4;   /* 4 bytes for the size of this TAG */
             i += (pComponentPrivate->sAPP0.nMarkerSize/4)*4;  /* x bytes for the actual buffer data for this TAG */
-            if (pComponentPrivate->sAPP0.nMarkerSize % 4) {
+            if (pComponentPrivate->sAPP0.nMarkerSize % 4) 
+            {
                 i +=4;  /* 4 extra bytes if the size is not divisible by 4*/
             }
         }
         /* if thumbnail is set, configure it accordingly */
-        if (pComponentPrivate->sAPP0.nThumbnailWidth > 0 && pComponentPrivate->sAPP0.nThumbnailHeight > 0) {
+        if (pComponentPrivate->sAPP0.nThumbnailWidth > 0 && pComponentPrivate->sAPP0.nThumbnailHeight > 0) 
+        {
             i+=4;  /* 4 bytes for the THUMB INDEX TAG */
             i+=4;  /* 4 bytes for the size of this TAG */
             i+=4;  /* 4 bytes for the actual data for this TAG */
@@ -2247,66 +2392,74 @@ OMX_U32 CalculateParamsSize (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate) {
     }
 
     /* handle APP1 marker (EXIF)*/
-    if (pComponentPrivate->sAPP1.bMarkerEnabled) {
+    if (pComponentPrivate->sAPP1.bMarkerEnabled) 
+    {
         i+=4;  /* 4 bytes for the Number of buffers TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
         i+=4;  /* 4 bytes for the actual number of buffers (just 1 buffer) */
         i+=4;  /* 4 bytes for the buffer0  TAG */
 
-    	/* if explicity specified by application, set the marker from algo, otherwise set it from application */
-    	if (pComponentPrivate->sAPP1.nMarkerSize <= 0) {
+      	/* if explicity specified by application, set the marker from algo, otherwise set it from application */
+      	if (pComponentPrivate->sAPP1.nMarkerSize <= 0) {
+              i+=4;   /* 4 bytes for the size of this TAG */
+              i+=4;   /* 4 bytes for the actual data of this TAG */
+              i+=4;   /* 4 bytes for the actual data of this TAG */
+        }
+      	else 
+        {
             i+=4;   /* 4 bytes for the size of this TAG */
-            i+=4;   /* 4 bytes for the actual data of this TAG */
-            i+=4;   /* 4 bytes for the actual data of this TAG */
-    	}
-    	else {
-    	    i+=4;   /* 4 bytes for the size of this TAG */
-                i += (pComponentPrivate->sAPP1.nMarkerSize/4)*4;  /* x bytes for the actual buffer data for this TAG */
-                if (pComponentPrivate->sAPP1.nMarkerSize % 4) {
-                    i +=4;  /* 4 extra bytes if the size is not divisible by 4*/
-                }
-    	}
+            i += (pComponentPrivate->sAPP1.nMarkerSize/4)*4;  /* x bytes for the actual buffer data for this TAG */
+            if (pComponentPrivate->sAPP1.nMarkerSize % 4) 
+            {
+                i +=4;  /* 4 extra bytes if the size is not divisible by 4*/
+            }
+        }
 
-    	/* if thumbnail is set, configure it accordingly */
-    	if (pComponentPrivate->sAPP1.nThumbnailWidth > 0 && pComponentPrivate->sAPP1.nThumbnailHeight > 0) {
-            i+=4;  /* 4 bytes for the THUMB INDEX TAG */
-            i+=4;  /* 4 bytes for the size of this TAG */
-            i+=4;  /* 4 bytes for the actual data for this TAG */
+      	/* if thumbnail is set, configure it accordingly */
+      	if (pComponentPrivate->sAPP1.nThumbnailWidth > 0 && pComponentPrivate->sAPP1.nThumbnailHeight > 0) 
+        {
+              i+=4;  /* 4 bytes for the THUMB INDEX TAG */
+              i+=4;  /* 4 bytes for the size of this TAG */
+              i+=4;  /* 4 bytes for the actual data for this TAG */
 
-            i+=4;  /* 4 bytes for the THUMB W TAG */
-            i+=4;  /* 4 bytes for the size of this TAG */
-            i+=4;  /* 4 bytes for the actual data for this TAG (width value) */
+              i+=4;  /* 4 bytes for the THUMB W TAG */
+              i+=4;  /* 4 bytes for the size of this TAG */
+              i+=4;  /* 4 bytes for the actual data for this TAG (width value) */
 
-            i+=4;  /* 4 bytes for the THUMB H TAG */
-            i+=4;  /* 4 bytes for the size of this TAG */
-            i+=4;  /* 4 bytes for the actual data for this TAG (height value) */
-    	}
+              i+=4;  /* 4 bytes for the THUMB H TAG */
+              i+=4;  /* 4 bytes for the size of this TAG */
+              i+=4;  /* 4 bytes for the actual data for this TAG (height value) */
+        }
     }
 
 
     /* handle APP5 marker */
-    if (pComponentPrivate->sAPP5.bMarkerEnabled) {
+    if (pComponentPrivate->sAPP5.bMarkerEnabled) 
+    {
         i+=4;  /* 4 bytes for the Number of buffers TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
         i+=4;  /* 4 bytes for the actual number of buffers (just 1 buffer) */
         i+=4;  /* 4 bytes for the buffer0  TAG */
             
-    	/* if explicity specified by application, set the marker from algo, otherwise set it from application */
-    	if (pComponentPrivate->sAPP5.nMarkerSize <= 0) {
+      	/* if explicity specified by application, set the marker from algo, otherwise set it from application */
+      	if (pComponentPrivate->sAPP5.nMarkerSize <= 0) {
+              i+=4;   /* 4 bytes for the size of this TAG */
+              i+=4;   /* 4 bytes for the actual data of this TAG */
+              i+=4;   /* 4 bytes for the actual data of this TAG */
+        }
+      	else 
+        {
             i+=4;   /* 4 bytes for the size of this TAG */
-            i+=4;   /* 4 bytes for the actual data of this TAG */
-            i+=4;   /* 4 bytes for the actual data of this TAG */
-    	}
-    	else {
-    	    i+=4;   /* 4 bytes for the size of this TAG */
-                i += (pComponentPrivate->sAPP5.nMarkerSize/4)*4;  /* x bytes for the actual buffer data for this TAG */
-                if (pComponentPrivate->sAPP5.nMarkerSize % 4) {
-                    i +=4;  /* 4 extra bytes if the size is not divisible by 4*/
-                }                
-    	} 
-        
-    	/* if thumbnail is set, configure it accordingly */
-    	if (pComponentPrivate->sAPP5.nThumbnailWidth > 0 && pComponentPrivate->sAPP5.nThumbnailHeight > 0) {
+            i+=(pComponentPrivate->sAPP5.nMarkerSize/4)*4;  /* x bytes for the actual buffer data for this TAG */
+            if (pComponentPrivate->sAPP5.nMarkerSize % 4) 
+            {
+                i+=4;  /* 4 extra bytes if the size is not divisible by 4*/
+            }                
+      	} 
+          
+      	/* if thumbnail is set, configure it accordingly */
+      	if (pComponentPrivate->sAPP5.nThumbnailWidth > 0 && pComponentPrivate->sAPP5.nThumbnailHeight > 0) 
+        {
             i+=4;  /* 4 bytes for the THUMB INDEX TAG */
             i+=4;  /* 4 bytes for the size of this TAG */
             i+=4;  /* 4 bytes for the actual data for this TAG */
@@ -2318,41 +2471,47 @@ OMX_U32 CalculateParamsSize (JPEGENC_COMPONENT_PRIVATE *pComponentPrivate) {
             i+=4;  /* 4 bytes for the THUMB H TAG */
             i+=4;  /* 4 bytes for the size of this TAG */
             i+=4;  /* 4 bytes for the actual data for this TAG (height value) */
-    	}
+      	}
     }  
     /* handle APP13 marker */
-    if (pComponentPrivate->sAPP13.bMarkerEnabled) {
+    if (pComponentPrivate->sAPP13.bMarkerEnabled) 
+    {
         i+=4;  /* 4 bytes for the Number of buffers TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
         i+=4;  /* 4 bytes for the actual number of buffers (just 1 buffer) */
         i+=4;  /* 4 bytes for the buffer0  TAG */
 
-    	/* if explicity specified by application, set the marker from algo, otherwise set it from application */
-    	if (pComponentPrivate->sAPP13.nMarkerSize <= 0) {
+      	/* if explicity specified by application, set the marker from algo, otherwise set it from application */
+      	if (pComponentPrivate->sAPP13.nMarkerSize <= 0) 
+        {
             i+=4;   /* 4 bytes for the size of this TAG */
             i+=4;   /* 4 bytes for the actual data of this TAG */
             i+=4;   /* 4 bytes for the actual data of this TAG */
-    	}
-    	else {
+        }
+      	else 
+        {
             i+=4;   /* 4 bytes for the size of this TAG */
-            i += (pComponentPrivate->sAPP13.nMarkerSize/4)*4;  /* x bytes for the actual buffer data for this TAG */
-            if (pComponentPrivate->sAPP13.nMarkerSize % 4) {
-                i +=4;  /* 4 extra bytes if the size is not divisible by 4*/
+            i+=(pComponentPrivate->sAPP13.nMarkerSize/4)*4;  /* x bytes for the actual buffer data for this TAG */
+            if (pComponentPrivate->sAPP13.nMarkerSize % 4) 
+            {
+                i+=4;  /* 4 extra bytes if the size is not divisible by 4*/
             }
-    	}
+      	}
     }
 
     /* comment flag needed */
     i+=4;   /* 4 bytes for the size of this TAG */
 
     /* handle CommentFlag */
-    if (pComponentPrivate->nCommentFlag == 1 && pComponentPrivate->pString_Comment) {
+    if (pComponentPrivate->nCommentFlag == 1 && pComponentPrivate->pString_Comment) 
+    {
         i+=4;  /* 4 bytes for the Comment TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
             /* comment string upper limit is 256 bytes */
             i+=256;
     }
-    else {
+    else 
+    {
         i+=4;  /* 4 bytes for the Comment TAG */
         i+=4;  /* 4 bytes for the size of this TAG */
     }
@@ -2371,31 +2530,37 @@ static OMX_ERRORTYPE SetJpegEncInPortParams(JPEGENC_COMPONENT_PRIVATE *pComponen
         new_params[i++] = 256; /* 2 tables * 64 entries * 2(16bit entries) */
         OMX_U16 *temp = (OMX_U16 *)&new_params[i];
         int j, k;
-        for (j = 0; j < 64; j++) {
+        for (j = 0; j < 64; j++) 
+        {
             temp[j] = pComponentPrivate->pCustomLumaQuantTable->nQuantizationMatrix[j];
         }
-        for (k = 0; k < 64; k++, j++) {
+        for (k = 0; k < 64; k++, j++) 
+        {
             temp[j] = pComponentPrivate->pCustomChromaQuantTable->nQuantizationMatrix[k];
         }
         i += 64; /* 256 / 4 */
     }
 
     /* Set Custom Huffman Table */
-    if (pComponentPrivate->bSetHuffmanTable) {
+    if (pComponentPrivate->bSetHuffmanTable) 
+    {
         new_params[i++] = DYNPARAMS_HUFFMANTABLE;
         new_params[i++] = sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE); /* 2572 % 4 = 0 */
 
         memcpy((OMX_U8 *)(&new_params[i]), &(pComponentPrivate->pHuffmanTable->sHuffmanTable), sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE));
-        if (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) % 4) {
+        if (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) % 4) 
+        {
             i += (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) + (4 - (sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE) % 4)))/4 ;
         }
-        else {
+        else 
+        {
            i += sizeof(JPEGENC_CUSTOM_HUFFMAN_TABLE)/4;
         }
     }
 
     /* handle APP0 marker (JFIF)*/
-    if(pComponentPrivate->sAPP0.bMarkerEnabled) {
+    if(pComponentPrivate->sAPP0.bMarkerEnabled) 
+    {
         new_params[i++] = APP0_NUMBUF;
         new_params[i++] = 4;
         new_params[i++] = 1;
@@ -2405,21 +2570,25 @@ static OMX_ERRORTYPE SetJpegEncInPortParams(JPEGENC_COMPONENT_PRIVATE *pComponen
 
         /* if thumbnail is set, or if explicity specified by application, set the marker from algo, otherwise set it from application */
         if ((pComponentPrivate->sAPP0.nThumbnailWidth > 0 && pComponentPrivate->sAPP0.nThumbnailHeight > 0)
-        	|| pComponentPrivate->sAPP0.nMarkerSize <= 0) {
+        	|| pComponentPrivate->sAPP0.nMarkerSize <= 0) 
+        {
             new_params[i++] = 4;
             new_params[i++] = 0;
         }
-        else {
+        else 
+        {
             new_params[i++] = pComponentPrivate->sAPP0.nMarkerSize;
             memcpy(new_params + i, pComponentPrivate->sAPP0.pMarkerBuffer, pComponentPrivate->sAPP0.nMarkerSize);
             i += pComponentPrivate->sAPP0.nMarkerSize / 4;
-            if (pComponentPrivate->sAPP0.nMarkerSize % 4) {
-            	i ++;
+            if (pComponentPrivate->sAPP0.nMarkerSize % 4) 
+            {
+                i++;
             }
         }
 
         /* if thumbnail is set, configure it accordingly */
-        if (pComponentPrivate->sAPP0.nThumbnailWidth > 0 && pComponentPrivate->sAPP0.nThumbnailHeight > 0) {
+        if (pComponentPrivate->sAPP0.nThumbnailWidth > 0 && pComponentPrivate->sAPP0.nThumbnailHeight > 0) 
+        {
             new_params[i++] = APP0_THUMB_INDEX;
             new_params[i++] = 4;
             new_params[i++] = 1;
@@ -2435,7 +2604,8 @@ static OMX_ERRORTYPE SetJpegEncInPortParams(JPEGENC_COMPONENT_PRIVATE *pComponen
     }
 
     /* handle APP1 marker (EXIF)*/
-    if(pComponentPrivate->sAPP1.bMarkerEnabled) {
+    if(pComponentPrivate->sAPP1.bMarkerEnabled) 
+    {
         new_params[i++] = APP1_NUMBUF;
         new_params[i++] = 4;
         new_params[i++] = 1;
@@ -2444,22 +2614,26 @@ static OMX_ERRORTYPE SetJpegEncInPortParams(JPEGENC_COMPONENT_PRIVATE *pComponen
         new_params[i++] = APP1_BUFFER;
 
         /* if explicity specified by application, set the marker from algo, otherwise set it from application */
-        if (pComponentPrivate->sAPP1.nMarkerSize <= 0) {
+        if (pComponentPrivate->sAPP1.nMarkerSize <= 0) 
+        {
             new_params[i++] = 8;
             new_params[i++] = 0;
             new_params[i++] = 'F' | 'F' << 8 | 'F' << 16 | 'F' << 24;
         }
-        else {
+        else 
+        {
             new_params[i++] = pComponentPrivate->sAPP1.nMarkerSize;
             memcpy(new_params + i, pComponentPrivate->sAPP1.pMarkerBuffer, pComponentPrivate->sAPP1.nMarkerSize);
             i += pComponentPrivate->sAPP1.nMarkerSize / 4;
-            if (pComponentPrivate->sAPP1.nMarkerSize % 4) {
-            	i ++;
+            if (pComponentPrivate->sAPP1.nMarkerSize % 4) 
+            {
+                i++;
             }
         }
 
         /* if thumbnail is set, configure it accordingly */
-        if (pComponentPrivate->sAPP1.nThumbnailWidth > 0 && pComponentPrivate->sAPP1.nThumbnailHeight > 0) {
+        if (pComponentPrivate->sAPP1.nThumbnailWidth > 0 && pComponentPrivate->sAPP1.nThumbnailHeight > 0) 
+        {
             new_params[i++] = APP1_THUMB_INDEX;
             new_params[i++] = 4;
             new_params[i++] = 1;
@@ -2476,7 +2650,8 @@ static OMX_ERRORTYPE SetJpegEncInPortParams(JPEGENC_COMPONENT_PRIVATE *pComponen
 
 
     /* handle APP5 marker */
-    if(pComponentPrivate->sAPP5.bMarkerEnabled) {
+    if(pComponentPrivate->sAPP5.bMarkerEnabled) 
+    {
         new_params[i++] = APP5_NUMBUF;
         new_params[i++] = 4;
         new_params[i++] = 1;
@@ -2485,17 +2660,20 @@ static OMX_ERRORTYPE SetJpegEncInPortParams(JPEGENC_COMPONENT_PRIVATE *pComponen
         new_params[i++] = APP5_BUFFER;
 
         /* if explicity specified by application, set the marker from algo, otherwise set it from application */
-        if (pComponentPrivate->sAPP5.nMarkerSize <= 0) {
+        if (pComponentPrivate->sAPP5.nMarkerSize <= 0) 
+        {
             new_params[i++] = 8;
             new_params[i++] = 0; 
             new_params[i++] = 'F' | 'F' << 8 | 'F' << 16 | 'F' << 24; 
         }
-        else {
+        else 
+        {
             new_params[i++] = pComponentPrivate->sAPP5.nMarkerSize;
             memcpy(new_params + i, pComponentPrivate->sAPP5.pMarkerBuffer, pComponentPrivate->sAPP5.nMarkerSize);
             i += pComponentPrivate->sAPP5.nMarkerSize / 4;
-            if (pComponentPrivate->sAPP5.nMarkerSize % 4) {
-            	i ++;
+            if (pComponentPrivate->sAPP5.nMarkerSize % 4) 
+            {
+                i++;
             }
         } 
 
@@ -2544,12 +2722,14 @@ static OMX_ERRORTYPE SetJpegEncInPortParams(JPEGENC_COMPONENT_PRIVATE *pComponen
     new_params[i++] = COMMENT_BUFFER;
 
     /* handle CommentFlag */
-    if (pComponentPrivate->nCommentFlag == 1 && pComponentPrivate->pString_Comment) {
+    if (pComponentPrivate->nCommentFlag == 1 && pComponentPrivate->pString_Comment) 
+    {
         new_params[i++] = strlen((char *)pComponentPrivate->pString_Comment)  + 4 ;
         new_params[i++] = 0;
         strncpy((char *)(new_params+i), (char *)pComponentPrivate->pString_Comment, 255);
     }
-    else {
+    else 
+    {
         new_params[i++] = 4;
         new_params[i++] = 0;
     }
@@ -2574,7 +2754,8 @@ OMX_ERRORTYPE SetJpegEncInParams(JPEGENC_COMPONENT_PRIVATE *pComponentPrivate)
     OMX_U8 *p = NULL;
     OMX_U32 params_size;
 
-    if (pComponentPrivate->InParams.pInParams) {
+    if (pComponentPrivate->InParams.pInParams) 
+    {
         p = (OMX_U8 *)pComponentPrivate->InParams.pInParams;
         p -= 128;
         OMX_FREE(p);
@@ -2615,43 +2796,49 @@ OMX_ERRORTYPE HandleJpegEncDataBuf_FromApp(JPEGENC_COMPONENT_PRIVATE *pComponent
         OMX_PRCOMM4(pComponentPrivate->dbg, "Error while reading from the pipe\n");
     }
 
-    if (pBuffHead != NULL) {
+    if (pBuffHead != NULL) 
+    {
         pBuffPrivate = pBuffHead->pInputPortPrivate;
-    } else {
+    } 
+    else 
+    {
         eError = OMX_ErrorInsufficientResources;
           goto EXIT;
-        }
+    }
 
-   if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_CLIENT) { 
+    if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_CLIENT) 
+    { 
         /* already returned to client */
         OMX_PRBUFFER4(pComponentPrivate->dbg, "this buffer %p already returned to client\n", pBuffHead);
         goto EXIT;
     }
      
-   if ((pComponentPrivate->nCurState != OMX_StateExecuting) || 
+    if ((pComponentPrivate->nCurState != OMX_StateExecuting) || 
        (pComponentPrivate->nToState == OMX_StateIdle) ||
-        (pPortDefIn->bEnabled == OMX_FALSE)) {
-            if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) {
-                pComponentPrivate->nInPortOut ++;
-                pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
-                OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (return empty input buffer) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);  
-                pComponentPrivate->cbInfo.EmptyBufferDone(
-                           pComponentPrivate->pHandle,
-                           pComponentPrivate->pHandle->pApplicationPrivate,
-                           pBuffHead);   
-             }
-             goto EXIT;
+       (pPortDefIn->bEnabled == OMX_FALSE)) 
+    {
+        if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) 
+        {
+            pComponentPrivate->nInPortOut ++;
+            pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
+            OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (return empty input buffer) %lu %lu %lu %lu\n",
+                          pComponentPrivate->nInPortIn,
+                          pComponentPrivate->nInPortOut,
+                          pComponentPrivate->nOutPortIn,
+                          pComponentPrivate->nOutPortOut);  
+            pComponentPrivate->cbInfo.EmptyBufferDone(
+                          pComponentPrivate->pHandle,
+                          pComponentPrivate->pHandle->pApplicationPrivate,
+                          pBuffHead);   
+         }
+         goto EXIT;
     }
 
     OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (HandleJpegEncDataBuf_FromApp) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);  
+                  pComponentPrivate->nInPortIn,
+                  pComponentPrivate->nInPortOut,
+                  pComponentPrivate->nOutPortIn,
+                  pComponentPrivate->nOutPortOut);  
 
 #ifdef __PERF_INSTRUMENTATION__
     PERF_SendingFrame(pComponentPrivate->pPERFcomp,
@@ -2660,16 +2847,18 @@ OMX_ERRORTYPE HandleJpegEncDataBuf_FromApp(JPEGENC_COMPONENT_PRIVATE *pComponent
                       PERF_ModuleCommonLayer);
 #endif
 
-    if ((pBuffHead->nFlags == OMX_BUFFERFLAG_EOS) && (pBuffHead->nAllocLen == 0)) {
-            OMX_PRBUFFER2(pComponentPrivate->dbg, "BufferFlag Set!!\n");
-            pComponentPrivate->nFlags = OMX_BUFFERFLAG_EOS;
+    if ((pBuffHead->nFlags == OMX_BUFFERFLAG_EOS) && (pBuffHead->nAllocLen == 0)) 
+    {
+        OMX_PRBUFFER2(pComponentPrivate->dbg, "BufferFlag Set!!\n");
+        pComponentPrivate->nFlags = OMX_BUFFERFLAG_EOS;
         pBuffHead->nFlags = 0;
     }
 #if 0
     eError = SendDynamicParam(pComponentPrivate);
-    if (eError != OMX_ErrorNone ) {
-            OMX_PRDSP4(pComponentPrivate->dbg, "SETSTATUS failed...  %x\n", eError);
-            goto EXIT;
+    if (eError != OMX_ErrorNone ) 
+    {
+        OMX_PRDSP4(pComponentPrivate->dbg, "SETSTATUS failed...  %x\n", eError);
+        goto EXIT;
     }
 #endif
 
@@ -2681,19 +2870,20 @@ OMX_ERRORTYPE HandleJpegEncDataBuf_FromApp(JPEGENC_COMPONENT_PRIVATE *pComponent
     pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_DSP;
 
     OMX_PRDSP2(pComponentPrivate->dbg, "Input: before queue buffer %p\n", pBuffHead);
-        eError = LCML_QueueBuffer(
-                                  pLcmlHandle->pCodecinterfacehandle,
-                                  EMMCodecInputBuffer,
-                                  pBuffHead->pBuffer,
-                                  pPortDefIn->nBufferSize, 
-                                  pBuffHead->nFilledLen,  
-                                  (OMX_U8 *) pComponentPrivate->InParams.pInParams,
-                                  pComponentPrivate->InParams.pInParams[0],
-                                  (OMX_U8 *)pBuffHead); 
+    eError = LCML_QueueBuffer(
+                              pLcmlHandle->pCodecinterfacehandle,
+                              EMMCodecInputBuffer,
+                              pBuffHead->pBuffer,
+                              pPortDefIn->nBufferSize, 
+                              pBuffHead->nFilledLen,  
+                              (OMX_U8 *) pComponentPrivate->InParams.pInParams,
+                              pComponentPrivate->InParams.pInParams[0],
+                              (OMX_U8 *)pBuffHead); 
 
     OMX_PRDSP2(pComponentPrivate->dbg, "Input: after queue buffer %p\n", pBuffHead);
 
-    if ( eError ) {
+    if ( eError ) 
+    {
         eError = OMX_ErrorInsufficientResources;
         OMX_PRDSP4(pComponentPrivate->dbg, "OMX_ErrorInsufficientResources\n");
         goto EXIT;
@@ -2718,17 +2908,18 @@ OMX_ERRORTYPE HandleJpegEncDataBuf_FromDsp(JPEGENC_COMPONENT_PRIVATE *pComponent
     
     pBuffPrivate = pBuffHead->pOutputPortPrivate; 
 
-        if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_CLIENT) {
-           OMX_PRBUFFER2(pComponentPrivate->dbg, "buffer %p already at the client side\n", pBuffHead);
-           pComponentPrivate->nOutPortOut --;
-           OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (FromDsp escape return output buffer) %lu %lu %lu %lu\n",
-                                        pComponentPrivate->nInPortIn,
-                                        pComponentPrivate->nInPortOut,
-                                        pComponentPrivate->nOutPortIn,
-                                        pComponentPrivate->nOutPortOut);
+    if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_CLIENT) 
+    {
+        OMX_PRBUFFER2(pComponentPrivate->dbg, "buffer %p already at the client side\n", pBuffHead);
+        pComponentPrivate->nOutPortOut --;
+        OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (FromDsp escape return output buffer) %lu %lu %lu %lu\n",
+                      pComponentPrivate->nInPortIn,
+                      pComponentPrivate->nInPortOut,
+                      pComponentPrivate->nOutPortIn,
+                      pComponentPrivate->nOutPortOut);
 
-           goto EXIT;
-        }
+        goto EXIT;
+    }
     
 #ifdef __PERF_INSTRUMENTATION__
         PERF_SendingFrame(pComponentPrivate->pPERFcomp,
@@ -2738,31 +2929,33 @@ OMX_ERRORTYPE HandleJpegEncDataBuf_FromDsp(JPEGENC_COMPONENT_PRIVATE *pComponent
 #endif
     pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
 
-        if (pBuffHead->pMarkData) {
-           OMX_PRBUFFER2(pComponentPrivate->dbg, "get Mark buffer %p %p %p\n", pBuffHead->pMarkData, pBuffHead->hMarkTargetComponent, pComponentPrivate->pHandle);
-        }
+    if (pBuffHead->pMarkData) 
+    {
+        OMX_PRBUFFER2(pComponentPrivate->dbg, "get Mark buffer %p %p %p\n", pBuffHead->pMarkData, pBuffHead->hMarkTargetComponent, pComponentPrivate->pHandle);
+    }
 
-        if (pBuffHead->pMarkData && pBuffHead->hMarkTargetComponent == pComponentPrivate->pHandle) {
-           OMX_PRBUFFER2(pComponentPrivate->dbg, "send OMX_MarkEvent\n");
-           pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                                pComponentPrivate->pHandle->pApplicationPrivate,
-                                                OMX_EventMark,
-                                                JPEGENC_OUT_PORT,
-                                                0,
-                                                pBuffHead->pMarkData);
-        }
+    if (pBuffHead->pMarkData && pBuffHead->hMarkTargetComponent == pComponentPrivate->pHandle) {
+        OMX_PRBUFFER2(pComponentPrivate->dbg, "send OMX_MarkEvent\n");
+        pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                               pComponentPrivate->pHandle->pApplicationPrivate,
+                                               OMX_EventMark,
+                                               JPEGENC_OUT_PORT,
+                                               0,
+                                               pBuffHead->pMarkData);
+    }
 
     OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (return empty output buffer) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);   
+                  pComponentPrivate->nInPortIn,
+                  pComponentPrivate->nInPortOut,
+                  pComponentPrivate->nOutPortIn,
+                  pComponentPrivate->nOutPortOut);   
     OMX_PRBUFFER1(pComponentPrivate->dbg, "Output: before fillbufferdone %p\n", pBuffHead);
-        pComponentPrivate->cbInfo.FillBufferDone(pComponentPrivate->pHandle,
-                        pComponentPrivate->pHandle->pApplicationPrivate,
-                        pBuffHead);
+    pComponentPrivate->cbInfo.FillBufferDone(pComponentPrivate->pHandle,
+                                             pComponentPrivate->pHandle->pApplicationPrivate,
+                                             pBuffHead);
   
-    if ( pComponentPrivate->nFlags & OMX_BUFFERFLAG_EOS )   {
+    if ( pComponentPrivate->nFlags & OMX_BUFFERFLAG_EOS )   
+    {
 
         pBuffHead->nFlags |= OMX_BUFFERFLAG_EOS;
         pComponentPrivate->cbInfo.EventHandler (pComponentPrivate->pHandle, 
@@ -2798,14 +2991,15 @@ OMX_ERRORTYPE HandleJpegEncFreeDataBuf( JPEGENC_COMPONENT_PRIVATE *pComponentPri
     OMX_PRCOMM2(pComponentPrivate->dbg, "hTunnelComponent = %p\n" ,hTunnelComponent );
     OMX_PRINT1(pComponentPrivate->dbg, "pComponentPrivate->pHandle = %p\n",pComponentPrivate->pHandle);
     
-    if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_CLIENT) {
+    if (pBuffPrivate->eBufferOwner == JPEGENC_BUFFER_CLIENT) 
+    {
         OMX_PRBUFFER2(pComponentPrivate->dbg, "buffer %p already at the client side\n", pBuffHead);
         pComponentPrivate->nInPortOut --;
         OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (FromDsp escape return input buffer) %lu %lu %lu %lu\n",
-                                        pComponentPrivate->nInPortIn,
-                                        pComponentPrivate->nInPortOut,
-                                        pComponentPrivate->nOutPortIn,
-                                        pComponentPrivate->nOutPortOut);
+                      pComponentPrivate->nInPortIn,
+                      pComponentPrivate->nInPortOut,
+                      pComponentPrivate->nOutPortIn,
+                      pComponentPrivate->nOutPortOut);
 
            goto EXIT;
     }
@@ -2819,24 +3013,25 @@ OMX_ERRORTYPE HandleJpegEncFreeDataBuf( JPEGENC_COMPONENT_PRIVATE *pComponentPri
                               0,
                               PERF_ModuleLLMM);
 #endif
-    pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_TUNNEL_COMPONENT;
+        pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_TUNNEL_COMPONENT;
         eError = OMX_FillThisBuffer(hTunnelComponent, pBuffHead);
 
     }
-    else {    
+    else 
+    {    
 
 #ifdef __PERF_INSTRUMENTATION__
-            PERF_SendingFrame(pComponentPrivate->pPERFcomp,
-                              pBuffHead->pBuffer,
-                              0,
-                              PERF_ModuleHLMM);
+        PERF_SendingFrame(pComponentPrivate->pPERFcomp,
+                          pBuffHead->pBuffer,
+                          0,
+                          PERF_ModuleHLMM);
 #endif
         pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_CLIENT;
         OMX_PRBUFFER2(pComponentPrivate->dbg, "before emptybufferdone in HandleJpegEncFreeDataBuf %p\n", pBuffHead);
         pComponentPrivate->cbInfo.EmptyBufferDone(
-                 pComponentPrivate->pHandle,
-                 pComponentPrivate->pHandle->pApplicationPrivate,
-                 pBuffHead);
+                       pComponentPrivate->pHandle,
+                       pComponentPrivate->pHandle->pApplicationPrivate,
+                       pBuffHead);
     }
 
     EXIT:
@@ -2865,111 +3060,124 @@ OMX_ERRORTYPE JpegEncLCML_Callback (TUsnCodecEvent event,void * argsCb [10])
     JPEGENC_COMPONENT_PRIVATE *pComponentPrivate = NULL;
     OMX_COMPONENTTYPE *pHandle = NULL;
 
-    if ( ((LCML_DSP_INTERFACE*)argsCb[6] ) != NULL ) {
+    if ( ((LCML_DSP_INTERFACE*)argsCb[6] ) != NULL ) 
+    {
         pComponentPrivate = (JPEGENC_COMPONENT_PRIVATE*)((LCML_DSP_INTERFACE*)argsCb[6])->pComponentPrivate;
         OMX_CHECK_PARAM(pComponentPrivate);
 
         pHandle = (OMX_COMPONENTTYPE *)pComponentPrivate->pHandle; 
     }
-    else {
+    else 
+    {
         OMXDBG_PRINT(stderr, DSP, 5, 0, "wrong in LCML callback, exit\n");
-	 goto EXIT;
+        goto EXIT;
     }
     OMX_PRDSP0(pComponentPrivate->dbg, "Event = %d\n", event);
 
-    if ( event == EMMCodecBufferProcessed ) {
-    if ( (int)argsCb [0] == EMMCodecOuputBuffer ) {    
-        OMX_BUFFERHEADERTYPE* pBuffHead = (OMX_BUFFERHEADERTYPE*)argsCb[7];
-        pBuffPrivate = pBuffHead->pOutputPortPrivate;
+    if ( event == EMMCodecBufferProcessed ) 
+    {
+        if ( (int)argsCb [0] == EMMCodecOuputBuffer ) 
+        {    
+            OMX_BUFFERHEADERTYPE* pBuffHead = (OMX_BUFFERHEADERTYPE*)argsCb[7];
+            pBuffPrivate = pBuffHead->pOutputPortPrivate;
 
-        pComponentPrivate->nOutPortOut ++;
+            pComponentPrivate->nOutPortOut ++;
 #ifdef __PERF_INSTRUMENTATION__
-        PERF_ReceivedFrame(pComponentPrivate->pPERFcomp,
-                           PREF(pBuffHead,pBuffer),
-                           PREF(pBuffHead,nFilledLen),
-                           PERF_ModuleCommonLayer);
+            PERF_ReceivedFrame(pComponentPrivate->pPERFcomp,
+                               PREF(pBuffHead,pBuffer),
+                               PREF(pBuffHead,nFilledLen),
+                               PERF_ModuleCommonLayer);
 #endif
-        OMX_PRDSP1(pComponentPrivate->dbg, "argsCb[8] is %d\n", (int)(argsCb[8]));
-        pBuffHead->nFilledLen = (OMX_U32) argsCb[8];
+            OMX_PRDSP1(pComponentPrivate->dbg, "argsCb[8] is %d\n", (int)(argsCb[8]));
+            pBuffHead->nFilledLen = (OMX_U32) argsCb[8];
 
-        OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (LCML for output buffer %p) %lu %lu %lu %lu\n", pBuffHead, 
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);
+            OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (LCML for output buffer %p) %lu %lu %lu %lu\n", pBuffHead, 
+                          pComponentPrivate->nInPortIn,
+                          pComponentPrivate->nInPortOut,
+                          pComponentPrivate->nOutPortIn,
+                          pComponentPrivate->nOutPortOut);
 
-        pPortType = pComponentPrivate->pCompPort[JPEGENC_INP_PORT];
-        for (i = 0; i < (int)(pPortType->pPortDef->nBufferCountActual); i ++) {
-            if (pComponentPrivate->nOutPortOut > 10) {
-                OMX_PRBUFFER1(pComponentPrivate->dbg, "pPortType->sBufferFlagTrack[i].buffer_id %lu\n", pPortType->sBufferFlagTrack[i].buffer_id);
+            pPortType = pComponentPrivate->pCompPort[JPEGENC_INP_PORT];
+            for (i = 0; i < (int)(pPortType->pPortDef->nBufferCountActual); i ++) 
+            {
+                if (pComponentPrivate->nOutPortOut > 10) 
+                {
+                    OMX_PRBUFFER1(pComponentPrivate->dbg, "pPortType->sBufferFlagTrack[i].buffer_id %lu\n", pPortType->sBufferFlagTrack[i].buffer_id);
+                }
+                if (pPortType->sBufferFlagTrack[i].buffer_id == pComponentPrivate->nOutPortOut) 
+                {
+                    OMX_PRBUFFER1(pComponentPrivate->dbg, "output buffer %lu has flag %lx\n", 
+                               pPortType->sBufferFlagTrack[i].buffer_id, 
+                               pPortType->sBufferFlagTrack[i].flag);
+                    pBuffHead->nFlags = pPortType->sBufferFlagTrack[i].flag;
+                    pPortType->sBufferFlagTrack[i].flag = 0;
+                    pPortType->sBufferFlagTrack[i].buffer_id = 0xFFFFFFFF;
+                    break;
+                }
             }
-            if (pPortType->sBufferFlagTrack[i].buffer_id == pComponentPrivate->nOutPortOut) {
-                OMX_PRBUFFER1(pComponentPrivate->dbg, "output buffer %lu has flag %lx\n", 
-                           pPortType->sBufferFlagTrack[i].buffer_id, 
-                           pPortType->sBufferFlagTrack[i].flag);
-                pBuffHead->nFlags = pPortType->sBufferFlagTrack[i].flag;
-                pPortType->sBufferFlagTrack[i].flag = 0;
-                pPortType->sBufferFlagTrack[i].buffer_id = 0xFFFFFFFF;
-                break;
+            for (i = 0; i < (int)(pPortType->pPortDef->nBufferCountActual); i ++) 
+            {
+                if (pPortType->sBufferMarkTrack[i].buffer_id == pComponentPrivate->nInPortOut) 
+                {
+                    OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer ID %lu has mark (output port)\n", pPortType->sBufferMarkTrack[i].buffer_id);
+                    pBuffHead->pMarkData = pPortType->sBufferMarkTrack[i].pMarkData;
+                    pBuffHead->hMarkTargetComponent = pPortType->sBufferMarkTrack[i].hMarkTargetComponent;
+                    pPortType->sBufferMarkTrack[i].buffer_id = 0xFFFFFFFF;
+                    break;
+                }
+            }
+            
+            OMX_PRDSP2(pComponentPrivate->dbg, "EMMCodec Args -> %x, %p\n", (int)argsCb[1] , (void *)(argsCb[5]));
+            if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) 
+            {
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "return output buffer %p from LCML_Callback (%d)\n", 
+                               pBuffHead, 
+                               pBuffPrivate->eBufferOwner);
+                pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_COMPONENT_OUT;
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "LCML_Callback - Filled (output) Data from DSP %p\n", pBuffHead);
+                eError = HandleJpegEncDataBuf_FromDsp(pComponentPrivate, pBuffHead);
             }
         }
-        for (i = 0; i < (int)(pPortType->pPortDef->nBufferCountActual); i ++) {
-            if (pPortType->sBufferMarkTrack[i].buffer_id == pComponentPrivate->nInPortOut) {
-                OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer ID %lu has mark (output port)\n", pPortType->sBufferMarkTrack[i].buffer_id);
-                pBuffHead->pMarkData = pPortType->sBufferMarkTrack[i].pMarkData;
-                pBuffHead->hMarkTargetComponent = pPortType->sBufferMarkTrack[i].hMarkTargetComponent;
-                pPortType->sBufferMarkTrack[i].buffer_id = 0xFFFFFFFF;
-                break;
-            }
-        }
-        
-        OMX_PRDSP2(pComponentPrivate->dbg, "EMMCodec Args -> %x, %p\n", (int)argsCb[1] , (void *)(argsCb[5]));
-        if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) {
-            OMX_PRBUFFER2(pComponentPrivate->dbg, "return output buffer %p from LCML_Callback (%d)\n", 
-                           pBuffHead, 
-                           pBuffPrivate->eBufferOwner);
-            pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_COMPONENT_OUT;
-            OMX_PRBUFFER2(pComponentPrivate->dbg, "LCML_Callback - Filled (output) Data from DSP %p\n", pBuffHead);
-            eError = HandleJpegEncDataBuf_FromDsp(pComponentPrivate, pBuffHead);
-        }
-    }
 
-    if ((int) argsCb [0] == EMMCodecInputBuffer ) {   
-        OMX_BUFFERHEADERTYPE* pBuffHead = (OMX_BUFFERHEADERTYPE*)argsCb[7];
-        pBuffPrivate = pBuffHead->pInputPortPrivate;
+        if ((int) argsCb [0] == EMMCodecInputBuffer ) 
+        {   
+            OMX_BUFFERHEADERTYPE* pBuffHead = (OMX_BUFFERHEADERTYPE*)argsCb[7];
+            pBuffPrivate = pBuffHead->pInputPortPrivate;
 
-       pComponentPrivate->nInPortOut ++;
-        OMX_PRBUFFER2(pComponentPrivate->dbg, "buffer summary (LCML for InputBuffer %p) %lu %lu %lu %lu\n", pBuffHead,
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);
+            pComponentPrivate->nInPortOut ++;
+            OMX_PRBUFFER2(pComponentPrivate->dbg, "buffer summary (LCML for InputBuffer %p) %lu %lu %lu %lu\n", pBuffHead,
+                          pComponentPrivate->nInPortIn,
+                          pComponentPrivate->nInPortOut,
+                          pComponentPrivate->nOutPortIn,
+                          pComponentPrivate->nOutPortOut);
 #ifdef __PERF_INSTRUMENTATION__
-	PERF_ReceivedFrame(pComponentPrivate->pPERFcomp,
-			   PREF(pBuffHead,pBuffer),
-			   0,
-			   PERF_ModuleCommonLayer);
+            PERF_ReceivedFrame(pComponentPrivate->pPERFcomp,
+                               PREF(pBuffHead,pBuffer),
+                               0,
+                               PERF_ModuleCommonLayer);
 #endif
-	OMX_PRDSP2(pComponentPrivate->dbg, "EMMCodec Args -> %x, %p\n", (int)argsCb[1] , (void *)(argsCb[5]));
-        if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) {
-            OMX_PRBUFFER2(pComponentPrivate->dbg, "return input buffer %p from LCML_Callback (%d)\n", 
-                           pBuffHead, 
-                           pBuffPrivate->eBufferOwner);
-            pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_COMPONENT_OUT;
-            OMX_PRBUFFER2(pComponentPrivate->dbg, "LCML_Callback - Emptied (input) Data from DSP %p\n", pBuffHead);
-            eError = HandleJpegEncFreeDataBuf(pComponentPrivate, pBuffHead);
+          	OMX_PRDSP2(pComponentPrivate->dbg, "EMMCodec Args -> %x, %p\n", (int)argsCb[1] , (void *)(argsCb[5]));
+            if (pBuffPrivate->eBufferOwner != JPEGENC_BUFFER_CLIENT) 
+            {
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "return input buffer %p from LCML_Callback (%d)\n", 
+                              pBuffHead, 
+                              pBuffPrivate->eBufferOwner);
+                pBuffPrivate->eBufferOwner = JPEGENC_BUFFER_COMPONENT_OUT;
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "LCML_Callback - Emptied (input) Data from DSP %p\n", pBuffHead);
+                eError = HandleJpegEncFreeDataBuf(pComponentPrivate, pBuffHead);
+            }
         }
-    }
-    goto PRINT_EXIT;
+        goto PRINT_EXIT;
     } /* end     if ( event == EMMCodecBufferProcessed ) */
 
-    if ( event == EMMCodecProcessingStoped ) {
+    if ( event == EMMCodecProcessingStoped ) 
+    {
         OMX_PRDSP2(pComponentPrivate->dbg, "Entering To EMMCodecProcessingStoped \n");
         OMX_PRBUFFER1(pComponentPrivate->dbg, "buffer summary (Stopped) %lu %lu %lu %lu\n",
-                    pComponentPrivate->nInPortIn,
-                    pComponentPrivate->nInPortOut,
-                    pComponentPrivate->nOutPortIn,
-                    pComponentPrivate->nOutPortOut);
+                      pComponentPrivate->nInPortIn,
+                      pComponentPrivate->nInPortOut,
+                      pComponentPrivate->nOutPortIn,
+                      pComponentPrivate->nOutPortOut);
         pComponentPrivate->bDSPStopAck = OMX_TRUE;
         OMX_PRSTATE2(pComponentPrivate->dbg, "to state is %d\n", pComponentPrivate->nToState);
 
@@ -2989,38 +3197,30 @@ OMX_ERRORTYPE JpegEncLCML_Callback (TUsnCodecEvent event,void * argsCb [10])
         goto PRINT_EXIT;
     }
 
-    if ( event == EMMCodecDspError ) {
-    
-       OMX_PRDSP4(pComponentPrivate->dbg, "in EMMCodecDspError EMMCodec Args -> %x, %x\n", (int)argsCb[4] , (int)argsCb[5]);
-        if ((int)argsCb[4] == USN_ERR_PROCESS && (int)argsCb[5] == IUALG_ERR_INSUFF_BUFFER) {
+    if ( event == EMMCodecDspError ) 
+    {    
+        OMX_PRDSP4(pComponentPrivate->dbg, "in EMMCodecDspError EMMCodec Args -> %x, %x\n", (int)argsCb[4] , (int)argsCb[5]);
+        if ((int)argsCb[4] == USN_ERR_PROCESS && (int)argsCb[5] == IUALG_ERR_INSUFF_BUFFER) 
+        {
             OMX_PRDSP4(pComponentPrivate->dbg,
                     "DSP Error. The allocated output buffer length is insufficient");
-           pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
                                      pComponentPrivate->pHandle->pApplicationPrivate,
                                      OMX_EventError,
                                      OMX_ErrorInsufficientResources,
                                      OMX_TI_ErrorCritical,
                                      "The allocated output buffer length is insufficient");
            goto PRINT_EXIT;
-       }
-       if ((int)argsCb[4] != 0x1 || (int)argsCb[5] != 0x500) {
-		   if ((int)argsCb[5] == JPEGENC_THUMBNAIL_ABSENT_WARNING) {
-	           OMX_PRDSP4(pComponentPrivate->dbg, "Thumbnail is not generated as it \
-	                   exceeds 64K spec size limit for the given thumbnail resolution and yuv data\n");
-	           pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-	                                     pComponentPrivate->pHandle->pApplicationPrivate,
-	                                     OMX_EventError,
-	                                     OMX_ErrorUndefined,
-	                                     OMX_TI_ErrorMinor,
-	                                     "Thumbnail not generated as it exceeds 64K size limit set by spec");
-		       goto EXIT;
-		   }
-           pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
-                                     pComponentPrivate->pHandle->pApplicationPrivate,
-                                     OMX_EventError, 
-                                     OMX_ErrorHardware, 
-                                     OMX_TI_ErrorCritical,
-                                     NULL);
+        }
+        if ((int)argsCb[4] != 0x1 || (int)argsCb[5] != 0x500) 
+        {
+            OMX_PRDSP4(pComponentPrivate->dbg, "DSP Error %x %x\n", (int)(argsCb[4]), (int)(argsCb[5]));
+            pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
+                                                   pComponentPrivate->pHandle->pApplicationPrivate,
+                                                   OMX_EventError, 
+                                                   OMX_ErrorHardware, 
+                                                   OMX_TI_ErrorCritical,
+                                                   NULL);
 
             pComponentPrivate->nCurState = OMX_StateInvalid;
             pComponentPrivate->cbInfo.EventHandler(pHandle,
@@ -3029,11 +3229,12 @@ OMX_ERRORTYPE JpegEncLCML_Callback (TUsnCodecEvent event,void * argsCb [10])
                                                    OMX_ErrorInvalidState,
                                                    OMX_TI_ErrorCritical,
                                                    "DSP Hardware Error");
-           goto PRINT_EXIT;
-       }
+            goto PRINT_EXIT;
+        }
 #ifdef DSP_MMU_FAULT_HANDLING
         /* Cheking for MMU_fault */
-        if((argsCb[4] == (void *)NULL) && (argsCb[5] == (void*)NULL)) {
+        if((argsCb[4] == (void *)NULL) && (argsCb[5] == (void*)NULL)) 
+        {
             //JPEGENC_DPRINT("DSP MMU_Fault");
             pComponentPrivate->nCurState = OMX_StateInvalid;
             pComponentPrivate->cbInfo.EventHandler(pHandle,
@@ -3045,7 +3246,8 @@ OMX_ERRORTYPE JpegEncLCML_Callback (TUsnCodecEvent event,void * argsCb [10])
         }
 #endif
     }
-    if (event == EMMCodecInternalError) {
+    if (event == EMMCodecInternalError) 
+    {
         eError = OMX_ErrorHardware;
         OMX_PRDSP4(pComponentPrivate->dbg, "JPEG-E: EMMCodecInternalError\n");
         pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
@@ -3056,22 +3258,26 @@ OMX_ERRORTYPE JpegEncLCML_Callback (TUsnCodecEvent event,void * argsCb [10])
                                                NULL);
         goto PRINT_EXIT;
     }
-    if ( event == EMMCodecProcessingPaused ) {
+    if ( event == EMMCodecProcessingPaused ) 
+    {
         OMX_PRDSP2(pComponentPrivate->dbg, "ENTERING TO EMMCodecProcessingPaused JPEG Encoder\n");
         if (pComponentPrivate != NULL) {
             pComponentPrivate->bDSPStopAck = OMX_TRUE;
             pComponentPrivate->nCurState = OMX_StatePause;
             /* Decrement reference count with signal enabled */
-            if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) {
+            if(RemoveStateTransition(pComponentPrivate, 1) != OMX_ErrorNone) 
+            {
                   return OMX_ErrorUndefined;
             }
             pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,pComponentPrivate->pHandle->pApplicationPrivate,
                                                    OMX_EventCmdComplete, OMX_CommandStateSet, pComponentPrivate->nCurState, NULL);
         }
     }
-    if (event == EMMCodecStrmCtrlAck) {
+    if (event == EMMCodecStrmCtrlAck) 
+    {
         OMX_PRDSP2(pComponentPrivate->dbg, "EMMCodecStrmCtrlAck\n");
-        if ((int)argsCb [0] == USN_ERR_NONE) {
+        if ((int)argsCb [0] == USN_ERR_NONE) 
+        {
             OMX_PRDSP2(pComponentPrivate->dbg, "Callback: no error\n");
             pComponentPrivate->bFlushComplete = OMX_TRUE;
             pthread_mutex_lock(&pComponentPrivate->jpege_mutex);
@@ -3079,7 +3285,8 @@ OMX_ERRORTYPE JpegEncLCML_Callback (TUsnCodecEvent event,void * argsCb [10])
             pthread_mutex_unlock(&pComponentPrivate->jpege_mutex);        
         }
     }
-    if (event == EMMCodecAlgCtrlAck) {
+    if (event == EMMCodecAlgCtrlAck) 
+    {
         OMX_PRDSP2(pComponentPrivate->dbg, "jpeg-enc: EMMCodecAlgCtrlAck\n"); 
         pComponentPrivate->bAckFromSetStatus = 1;
         /*
@@ -3125,7 +3332,8 @@ OMX_BOOL IsTIOMXComponent(OMX_HANDLETYPE hComp)
 
     /* Check if tunneled component is a TI component */
     pSubstring = strstr(pTunnelcComponentName, "OMX.TI.");
-    if(pSubstring == NULL) {
+    if(pSubstring == NULL) 
+    {
         bResult = OMX_FALSE;
     }
 
@@ -3156,12 +3364,13 @@ void ResourceManagerCallback(RMPROXY_COMMANDDATATYPE cbData)
     pComponentPrivate = (JPEGENC_COMPONENT_PRIVATE *)pHandle->pComponentPrivate;
     OMX_PRINT1(pComponentPrivate->dbg, "RM_Error = %x\n", RM_Error);
 
-    if (RM_Error == OMX_RmProxyCallback_ResourcesPreempted) {
-
+    if (RM_Error == OMX_RmProxyCallback_ResourcesPreempted) 
+    {
         pComponentPrivate->bPreempted = 1;
         
         if (pComponentPrivate->nCurState == OMX_StateExecuting || 
-            pComponentPrivate->nCurState == OMX_StatePause) {
+            pComponentPrivate->nCurState == OMX_StatePause) 
+        {
 
             pComponentPrivate->cbInfo.EventHandler(pComponentPrivate->pHandle,
                                                    pComponentPrivate->pHandle->pApplicationPrivate,
@@ -3173,7 +3382,8 @@ void ResourceManagerCallback(RMPROXY_COMMANDDATATYPE cbData)
             pComponentPrivate->nToState = OMX_StateIdle;
             OMX_PRSTATE2(pComponentPrivate->dbg, "Component Preempted. Going to IDLE State.\n");
         }
-        else if (pComponentPrivate->nCurState == OMX_StateIdle){
+        else if (pComponentPrivate->nCurState == OMX_StateIdle)
+        {
             pComponentPrivate->nToState = OMX_StateLoaded;
             OMX_PRSTATE2(pComponentPrivate->dbg, "Component Preempted. Going to LOADED State.\n");            
         }
@@ -3186,8 +3396,8 @@ void ResourceManagerCallback(RMPROXY_COMMANDDATATYPE cbData)
         write (pComponentPrivate->nCmdDataPipe[1], &(pComponentPrivate->nToState) ,sizeof(OMX_U32));
         
     }
-    else if (RM_Error == OMX_RmProxyCallback_ResourcesAcquired ){
-
+    else if (RM_Error == OMX_RmProxyCallback_ResourcesAcquired )
+    {
         if (pComponentPrivate->nCurState == OMX_StateWaitForResources) /* Wait for Resource Response */
         {
             pComponentPrivate->cbInfo.EventHandler (
@@ -3205,26 +3415,27 @@ void ResourceManagerCallback(RMPROXY_COMMANDDATATYPE cbData)
             write (pComponentPrivate->nCmdDataPipe[1], &(pComponentPrivate->nToState) ,sizeof(OMX_U32));
             OMX_PRMGR2(pComponentPrivate->dbg, "OMX_RmProxyCallback_ResourcesAcquired.\n");
         }            
-	}
-	else if (RM_Error == OMX_RmProxyCallback_FatalError){
-        
-		/* Deinitialize the component...no error should be returned from
-		 * this function. It should clean the system as much as possible */
-		if ( pComponentPrivate->pLCML != NULL && pComponentPrivate->isLCMLActive) {
-                	LCML_ControlCodec(((LCML_DSP_INTERFACE*)pComponentPrivate->pLCML)->pCodecinterfacehandle, EMMCodecControlDestroy, NULL);
-                     	dlclose(pComponentPrivate->pDllHandle);
-                	pComponentPrivate->pLCML = NULL;
-                	pComponentPrivate->isLCMLActive = 0;
-		}
+    }
+    else if (RM_Error == OMX_RmProxyCallback_FatalError)
+    {        
+        /* Deinitialize the component...no error should be returned from
+        * this function. It should clean the system as much as possible */
+        if ( pComponentPrivate->pLCML != NULL && pComponentPrivate->isLCMLActive) 
+        {
+            LCML_ControlCodec(((LCML_DSP_INTERFACE*)pComponentPrivate->pLCML)->pCodecinterfacehandle, EMMCodecControlDestroy, NULL);
+            dlclose(pComponentPrivate->pDllHandle);
+            pComponentPrivate->pLCML = NULL;
+            pComponentPrivate->isLCMLActive = 0;
+        }
 
-		pComponentPrivate->nCurState = OMX_StateInvalid;
-		pComponentPrivate->cbInfo.EventHandler(pHandle,
-											   pHandle->pApplicationPrivate,
-											   OMX_EventError,
-											   OMX_ErrorInvalidState,
-											   OMX_TI_ErrorSevere,
-											   NULL);
-	}
+        pComponentPrivate->nCurState = OMX_StateInvalid;
+        pComponentPrivate->cbInfo.EventHandler(pHandle,
+                                               pHandle->pApplicationPrivate,
+                                               OMX_EventError,
+                                               OMX_ErrorInvalidState,
+                                               OMX_TI_ErrorSevere,
+                                               NULL);
+    }
 }
 #endif
 
@@ -3236,25 +3447,29 @@ void LinkedList_Create(LinkedList *LinkedList) {
 void LinkedList_AddElement(LinkedList *LinkedList, void *pValue) {
     /* create new node and fill the value */
     Node *pNewNode = (Node *)malloc(sizeof(Node));
-    if ( pNewNode != NULL ) {
+    if ( pNewNode != NULL ) 
+    {
         pNewNode->pValue = (void *)pValue;
         /*printf("LinkedList:::: Pointer=%p has been added.\n", pNewNode->pValue); */
         /* add new node on the root to implement quick FIFO */
         /* modify new node pointers */
 
         pthread_mutex_lock(&LinkedList->lock);
-        if(LinkedList->pRoot == NULL) {
+        if(LinkedList->pRoot == NULL) 
+        {
             pNewNode->pNextNode = NULL;
         }
-        else {
-             pNewNode->pNextNode = LinkedList->pRoot;
+        else 
+        {
+            pNewNode->pNextNode = LinkedList->pRoot;
         }
         /*modify root */
         LinkedList->pRoot = pNewNode;
         pthread_mutex_unlock(&LinkedList->lock);
     }
-    else {
-         LOGE("Linked list memory allocation failed.\n" );
+    else 
+    {
+        printf ("Linked list memory allocation failed.\n" );
     }
 }
 
@@ -3262,13 +3477,17 @@ void LinkedList_FreeElement(LinkedList *LinkedList, void *pValue) {
     pthread_mutex_lock(&LinkedList->lock);
     Node *pNode = LinkedList->pRoot;
     Node *pPastNode = NULL;
-    while (pNode != NULL) {
-        if (pNode->pValue == pValue) {
+    while (pNode != NULL) 
+    {
+        if (pNode->pValue == pValue) 
+        {
             Node *pTempNode = pNode->pNextNode;
-            if(pPastNode == NULL) {
+            if(pPastNode == NULL) 
+            {
                 LinkedList->pRoot = pTempNode;
             }
-            else {
+            else 
+            {
                 pPastNode->pNextNode = pTempNode;
             }
             /*printf("LinkedList:::: Pointer=%p has been freed\n", pNode->pValue); */
@@ -3291,10 +3510,11 @@ void LinkedList_FreeAll(LinkedList *LinkedList) {
     while (LinkedList->pRoot != NULL) {
         pTempNode = LinkedList->pRoot->pNextNode;
         /*printf("LinkedList:::: Pointer=%p has been freed\n", LinkedList->pRoot->pValue); */
-        if(LinkedList->pRoot->pValue != NULL) {
-		free(LinkedList->pRoot->pValue);
-		LinkedList->pRoot->pValue = NULL;
-	}
+        if(LinkedList->pRoot->pValue != NULL) 
+        {
+            free(LinkedList->pRoot->pValue);
+            LinkedList->pRoot->pValue = NULL;
+        }
         free(LinkedList->pRoot);
         LinkedList->pRoot = pTempNode;
         nodes++;
@@ -3308,7 +3528,8 @@ void LinkedList_DisplayAll(LinkedList *LinkedList) {
     int nodes = 0;
     printf("\n================== Displaying contents of linked list=%p=====================\n", LinkedList);
     printf("root->\n");
-    while (pNode != NULL) {
+    while (pNode != NULL) 
+    {
         printf("[Value=%p, NextNode=%p]->\n", pNode->pValue, pNode->pNextNode);
         pNode = pNode->pNextNode;
         nodes++;
@@ -3324,14 +3545,16 @@ OMX_ERRORTYPE AddStateTransition(JPEGENC_COMPONENT_PRIVATE* pComponentPrivate) {
 
     OMX_ERRORTYPE eError = OMX_ErrorNone;
      
-    if(pthread_mutex_lock(&pComponentPrivate->mutexStateChangeRequest)) {
+    if(pthread_mutex_lock(&pComponentPrivate->mutexStateChangeRequest)) 
+    {
        return OMX_ErrorUndefined;
     }
 
     /* Increment state change request reference count */
     pComponentPrivate->nPendingStateChangeRequests++;
     
-    if(pthread_mutex_unlock(&pComponentPrivate->mutexStateChangeRequest)) {
+    if(pthread_mutex_unlock(&pComponentPrivate->mutexStateChangeRequest)) 
+    {
        return OMX_ErrorUndefined;
     }
 
@@ -3342,18 +3565,21 @@ OMX_ERRORTYPE RemoveStateTransition(JPEGENC_COMPONENT_PRIVATE* pComponentPrivate
     OMX_ERRORTYPE eError = OMX_ErrorNone;
      
      /* Decrement state change request reference count*/
-    if(pthread_mutex_lock(&pComponentPrivate->mutexStateChangeRequest)) {
+    if(pthread_mutex_lock(&pComponentPrivate->mutexStateChangeRequest)) 
+    {
        return OMX_ErrorUndefined;
     }
 
     pComponentPrivate->nPendingStateChangeRequests--;
      
     /* If there are no more pending requests, signal the thread waiting on this*/
-    if(!pComponentPrivate->nPendingStateChangeRequests && bEnableSignal) {
+    if(!pComponentPrivate->nPendingStateChangeRequests && bEnableSignal) 
+    {
        pthread_cond_signal(&(pComponentPrivate->StateChangeCondition));
     }
  
-    if(pthread_mutex_unlock(&pComponentPrivate->mutexStateChangeRequest)) {
+    if(pthread_mutex_unlock(&pComponentPrivate->mutexStateChangeRequest)) 
+    {
        return OMX_ErrorUndefined;
     }
     

@@ -1535,8 +1535,8 @@ static OMX_ERRORTYPE JPEGENC_SetConfig (OMX_HANDLETYPE hComp,
 	break;
 
 	case OMX_IndexCustomColorFormatConvertion_420pTo422i :
-	{
-		pComponentPrivate->bConvert420pTo422i = *((OMX_BOOL*)ComponentConfigStructure);
+	{		
+		pComponentPrivate->bConvert420pTo422i = *((OMX_BOOL*)ComponentConfigStructure);			
 		break;
 	}
 
@@ -1547,7 +1547,6 @@ static OMX_ERRORTYPE JPEGENC_SetConfig (OMX_HANDLETYPE hComp,
 #endif
 		break;
 	}
-
     default:
         eError = OMX_ErrorUnsupportedIndex;
         break;
@@ -1641,6 +1640,10 @@ static OMX_ERRORTYPE JPEGENC_GetState (OMX_HANDLETYPE hComponent, OMX_STATETYPE*
         eError = OMX_ErrorInvalidComponent;
         *pState = OMX_StateInvalid;
     }
+
+    return eError;
+  
+EXIT:
     return eError;
 }
 
@@ -1688,10 +1691,6 @@ static OMX_ERRORTYPE JPEGENC_EmptyThisBuffer (OMX_HANDLETYPE pComponent,
         goto EXIT;
     }
     
-    if ( pBuffHead == NULL ) {
-        eError = OMX_ErrorBadParameter;
-        goto EXIT;
-    }
     if ( pBuffHead->nSize != sizeof(OMX_BUFFERHEADERTYPE) ) {
         eError = OMX_ErrorBadParameter;
         OMX_PRBUFFER4(pComponentPrivate->dbg, "JPEG-ENC: buffer header size is not correct\n");
@@ -2366,8 +2365,7 @@ OMX_ERRORTYPE JPEGENC_GetExtensionIndex(OMX_IN OMX_HANDLETYPE hComponent, OMX_IN
     OMX_CHECK_PARAM(pIndexType);
     *pIndexType = OMX_IndexMax;
 
-    const OMX_U32 nExtensions = sizeof(sJpegEncCustomParams)/sizeof(JPEGENC_CUSTOM_PARAM_DEFINITION);
-    for (nIndex = 0; nIndex < nExtensions; ++nIndex) {
+    for (nIndex = 0; strlen((const char*)sJpegEncCustomParams[nIndex].cCustomParamName); nIndex++){
         if (!strcmp((const char*)cParameterName, (const char*)(&(sJpegEncCustomParams[nIndex].cCustomParamName)))){
             *pIndexType = sJpegEncCustomParams[nIndex].nCustomParamIndex;
             eError = OMX_ErrorNone;

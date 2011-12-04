@@ -81,7 +81,7 @@
 #ifdef UNDER_CE
 OMX_STRING StrJpegEncoder= "OMX.TI.IMAGE.JPEG.ENC"; 
 #else
- OMX_STRING StrJpegEncoder= "OMX.TI.JPEG.Encoder";
+ OMX_STRING StrJpegEncoder= "OMX.TI.JPEG.encoder";
 #endif
 
 OMX_U8 APPLICATION1_NOTHUMB[]={
